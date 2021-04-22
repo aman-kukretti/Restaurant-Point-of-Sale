@@ -17,13 +17,11 @@
     <h3 class="formHeading">Category</h3>
     <div class="checkboxes">
       <%categories.forEach(function(category) {%>
-        <input type="radio" class="checkboxicon" name="category" id="<%=category.name%>" value="<%=category.id%>" required>
-        <label for="<%=category.name%>" class="checkbox-heading"><%=category.name%></label>
+        <div class="" style="display: inline;white-space: nowrap;">
+          <input type="radio" class="checkboxicon" name="category" id="<%=category.name%>" value="<%=category.id%>" required>
+          <label for="<%=category.name%>" class="checkbox-heading"><%=category.name%></label>
+        </div>
       <%})%>
-      <!-- <input type="radio" class="checkboxicon" name="category" id="Whopper" value="Whopper" required>
-      <label for="Whopper" class="checkbox-heading">Whopper</label>
-      <input type="radio" class="checkboxicon" name="category" id="Sides" value="Sides">
-      <label for="Sides" class="checkbox-heading">Sides</label> -->
     </div>
 
     <h3 class="formHeading">Type</h3>

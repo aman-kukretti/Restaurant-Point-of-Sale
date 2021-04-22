@@ -14,45 +14,48 @@
 
   <h1 class="mainHeading">Menu</h1>
 
-  <%categoryList.forEach(function(category) {%>
+  <%rows.forEach(function(row) {%>
+    <%if(row.items.length === 0) {} else {%>
+
     <hr class="categorySeperator">
 
-    <div class="itemCategory" id="<%=category.categoryName%>">
-      <h1 class="categoryTitle"><%=category.categoryName%></h1>
-      <h3 class="itemCount">3 ITEMS</h3>
+    <div class="itemCategory" id="<%=row.category.name%>">
+      <h1 class="categoryTitle"><%=row.category.name%></h1>
+      <h3 class="itemCount"><%=row.items.length%> ITEMS</h3>
 
-      <%itemList.forEach(function(item) {%>
-        <%if(item.category_id === category._id) {%>
+      <%row.items.forEach(function(item) {%>
 
           <hr class="itemSeperator">
 
           <div class="item">
-            <h2 class="itemTitle"><%=item.itemName%></h2>
 
-            <%if( item.veg ) {%>
+            <%if( item.isVeg ) {%>
               <img class="itemType" src="images/icons/veg.png" alt="VEG">
             <%} else {%>
               <img class="itemType" src="images/icons/nonveg.png" alt="NON VEG">
             <%}%>
 
-            <span class="itemPrice"><span class="rupee-sign">₹</span><%=item.itemPrice%></span>
+            <h2 class="itemTitle"><%=item.name%></h2>
+
+            <span class="itemPrice"><span class="rupee-sign">₹</span><%=item.price%></span>
             <br>
-            <p class="itemDescription"><%=item.itemDescription%></p>
-            <img class="itemImage" src="images/<%=category.categoryName%>/<%=item.itemName%>.jfif" alt="VEG WHOPPER">
+            <p class="itemDescription"><%=item.description%></p>
+
+            <img class="itemImage" src="<%=item.imagePath%>" alt="<%=item.name%>">
 
             <div class="quantityDisplayer">
 
-              <% var itemId = item.itemName.replace(/ /g, "_") %>
+              <% var itemId = item.name.replace(/ /g, "_") %>
 
               <button type="button" name="button" class="minus-btn <%=itemId%>">-</button>
               <span id="<%=itemId%>_Quantity">0</span>
               <button type="button" name="button" class="plus-btn <%=itemId%>">+</button>
-              <input type="hidden" id="<%=itemId%>" name="<%=item.itemName%>" value="0">
+              <input type="hidden" id="<%=itemId%>" name="<%=item.name%>" value="0">
             </div>
           </div>
 
-        <%}%>
       <%})%>
+    <%}%>
   <%})%>
 </div>
 
