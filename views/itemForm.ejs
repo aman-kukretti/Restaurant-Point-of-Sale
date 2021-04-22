@@ -1,0 +1,46 @@
+<%- include('partials/header') -%>
+
+<div class="inner">
+  <h1 class="mainHeading">New Item</h1>
+
+  <hr class="categorySeperator">
+
+  <form class="" action="/newitem" method="post" enctype="multipart/form-data">
+    <h3 class="formHeading">Dish Name</h3>
+    <input type="text" name="name" required>
+    <br>
+    <h3 class="formHeading">About the dish</h3>
+    <textarea name="description" rows="8" cols="80" style="width:100%;"></textarea>
+    <h3 class="formHeading">Price</h3>
+    <input type="number" name="price" required>
+    <br>
+    <h3 class="formHeading">Category</h3>
+    <div class="checkboxes">
+      <%categories.forEach(function(category) {%>
+        <input type="radio" class="checkboxicon" name="category" id="<%=category.name%>" value="<%=category.id%>" required>
+        <label for="<%=category.name%>" class="checkbox-heading"><%=category.name%></label>
+      <%})%>
+      <!-- <input type="radio" class="checkboxicon" name="category" id="Whopper" value="Whopper" required>
+      <label for="Whopper" class="checkbox-heading">Whopper</label>
+      <input type="radio" class="checkboxicon" name="category" id="Sides" value="Sides">
+      <label for="Sides" class="checkbox-heading">Sides</label> -->
+    </div>
+
+    <h3 class="formHeading">Type</h3>
+    <div class="checkboxes">
+      <input type="radio" class="checkboxicon" name="isVeg" id="veg" value="1">
+      <label for="veg" class="checkbox-heading">Veg</label>
+      <input type="radio" class="checkboxicon" name="isVeg" id="nonveg" value="0">
+      <label for="nonveg" class="checkbox-heading">Non-Veg</label>
+    </div>
+
+    <h3 class="formHeading">Image Upload</h3>
+    <input type="file" name="itemImage">
+    <br>
+
+    <button type="submit" class="submit-button-item">Confirm</button>
+  </form>
+
+</div>
+
+<%- include('partials/footer') -%>
