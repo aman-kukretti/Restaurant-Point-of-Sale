@@ -16,7 +16,7 @@ const app = express();
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true})).use(bodyParser.json());
-app.use(express.static("public"));
+app.use(express.static(__dirname + "/public"));
 
 const db = mysql.createConnection({
   host: 'localhost',
@@ -92,16 +92,13 @@ app.post("/order", function(req, res) {
     }
   }
 
-  if(data.length===0) {
-    res.redirect("/order");
-  }
-  else {
-    var id = 0;
-    const sqlQuery = "SELECT COUNT(*)+1 as lastid FROM restOrder WHERE reqdate=CURDATE()";
-    db.query(sqlQuery, function(err, rows, response) {
-      if(err) throw err;
-      else {
-        id = rows[0].lastid;
+  var id = 0;
+  const sqlQuery = "SELECT COUNT(*)+1 as lastid FROM restOrder WHERE reqdate=CURDATE()";
+  db.query(sqlQuery, function(err, rows, response) {
+    if(err) throw err;
+    else {
+      id = rows[0].lastid;
+      if(data.length>0) {
         for(var i=0; i<data.length; i++) {
           const sqlQuery2 = `INSERT INTO contains VALUES(${id}, CURDATE(), ${data[i].itemid}, ${data[i].quantity})`;
           db.query(sqlQuery2, function(err, response) {
@@ -112,16 +109,50 @@ app.post("/order", function(req, res) {
         db.query(sqlQuery3, function(err, response) {
           if(err) throw err;
           else {
-            res.render("cart", {items: data});
+            // res.render("cart", {items: data});
+            res.redirect(`/orders/today/${id}`);
           }
         })
+      } else {
+        res.redirect("/order");
       }
-    })
-  }
+    }
+  })
 })
 
-app.get("/cart", function(req, res) {
-  res.render("cart");
+app.get("/orders/today/:orderId", function(req, res) {
+  const requestedid = parseInt(req.params.orderId);
+  const orderQuery = `SELECT name,item_quantity as quantity,price FROM (SELECT itemid,item_quantity FROM contains WHERE orderdate=CURDATE() and orderid=${requestedid})tblTmpc INNER JOIN (SELECT id,name,price FROM item)tblTemp ON itemid=id`;
+  db.query(orderQuery, function(err, rows, response) {
+    if(err) throw err;
+    else {
+      var amount = 0;
+      for(var i=0; i<rows.length; i++) {
+        amount += rows[i].quantity * rows[i].price;
+      }
+      const gstAmount = Math.round(amount*0.08);
+      const topay = amount + gstAmount;
+      const customerQuery = `SELECT id,custname as name,DATE_FORMAT(reqdate, "%d %b %Y") as date,HOUR(reqtime) as hour, MINUTE(reqtime) as minute FROM restOrder WHERE id=${requestedid}`
+      db.query(customerQuery, function(err, customer, response) {
+        if(err) throw err;
+        else {
+          console.log(typeof customer[0].date);
+          res.render("cart", {
+            items: rows,
+            total: amount,
+            gst: gstAmount,
+            topay: topay,
+            customer: customer[0]
+          })
+        }
+      })
+
+    }
+  })
+})
+
+app.get("/orders/current", function(req, res) {
+  res.render("orderList");
 })
 
 app.get("/newitem", function(req, res) {

@@ -1,14 +1,42 @@
 <%- include('partials/header') -%>
 
+<div class="sidebox">
+
+  <span class="cartOrderDetails">Order Number</span>
+  <span class="cartOrderDetails" style="float: right;"><%=customer.id%></span>
+  <br><hr class="itemSeperator">
+
+  <span class="cartOrderDetails"><%=customer.date%></span>
+  <span class="cartOrderDetails" style="float: right;"><%=customer.hour%>:<%=customer.minute%></span>
+  <br><hr class="itemSeperator">
+
+  <span class="cartOrderDetails x">Name</span>
+  <span class="cartOrderDetails" style="float: right;"><%=customer.name%></span>
+  <br><hr class="itemSeperator">
+
+  <span class="cartOrderDetails">Total Amount</span>
+  <span class="cartOrderDetails" style="float: right;"><span class="rupee-sign">₹</span><%=total%></span>
+  <br>
+
+  <span class="cartOrderDetails">Taxes and Charges</span>
+  <span class="cartOrderDetails" style="float: right;"><span class="rupee-sign">₹</span><%=gst%></span>
+  <br><hr class="itemSeperator">
+
+  <span class="cartOrderDetails">To Pay</span>
+  <span class="cartOrderDetails" style="float: right;"><span class="rupee-sign">₹</span><%=topay%></span>
+  <br>
+
+</div>
+
 <div class="inner">
-  <h1 class="mainHeading">Cart</h1>
+  <h1 class="mainHeading">Order <%=customer.id%></h1>
 
   <hr class="categorySeperator">
 
   <div class="cartHeadingBox">
     <h3 class="cartHeadingItem">Item</h3>
     <h3 class="cartHeadingQuantity">Quantity</h3>
-    <h3 class="cartHeadingPrice">Price</h3>
+    <h3 class="cartHeadingPrice">Amount</h3>
   </div>
 
   <hr class="itemSeperator">
@@ -17,10 +45,16 @@
     <div class="cartItem">
       <h4 class="cartName cart-item-font"><%=item.name%></h4>
       <p class="cartQuantity cart-item-font"><%=item.quantity%></p>
-      <p class="cartPrice cart-item-font"><span class="rupee-sign">₹</span><%=item.price%></p>
+      <p class="cartPrice cart-item-font"><span class="rupee-sign">₹</span><%=item.price*item.quantity%></p>
     </div>
   <%})%>
 
+  <hr class="itemSeperator">
+  <div class="cartItem">
+    <h4 class="cartName cart-item-font">Total Amount</h4>
+    <p class="cartQuantity cart-item-font"></p>
+    <p class="cartPrice cart-item-font"><span class="rupee-sign">₹</span><%=total%></p>
+  </div>
 </div>
 
 <%- include('partials/footer') -%>

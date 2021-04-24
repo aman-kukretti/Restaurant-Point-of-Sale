@@ -191,25 +191,26 @@ body {
   font-size: 1.5rem;
 }
 
-.customerDetails {
+.sidebox {
   background-color: white;
   padding: 20px;
   position: absolute;
   right: 50px;
   top: 200px;
   width: 300px;
-  text-align: center;
   border-radius: 20px;
 }
 
-.customerDetails label {
+.sidebox label {
+  text-align: center;
   display: block;
   margin-bottom: 10px;
   font-family: "Times New Roman", serif;
   font-weight: 600;
 }
 
-.customerDetails input {
+.sidebox input {
+  text-align: center;
   width: 100%;
   margin-bottom: 20px;
   height: 30px;
@@ -229,12 +230,8 @@ input:focus-visible {
   margin: 20px auto;
 }
 
-.cartHeadingBox {
-  position: relative;
-}
-
 .cartHeadingBox{
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-family: Roboto, sans-serif;
 }
 
@@ -283,4 +280,13 @@ input:focus-visible {
 
 .submit-button-item:hover {
   opacity: 0.9;
+}
+
+.cartOrderDetails {
+  font-family: Roboto, sans-serif;
+  font-size: 1.1rem;
+}
+
+.x {
+  margin-left: auto;
 }
