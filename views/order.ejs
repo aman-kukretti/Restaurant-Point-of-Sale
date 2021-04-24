@@ -3,12 +3,14 @@
 <div class="customerDetails">
   <label for="name">Customer Name</label>
   <input id="name" type="text" name="customerName" form="menu" required>
+  <label for="table">Table Number</label>
+  <input id="table" type="number" name="tableno" form="menu" required>
   <label for="phone">Customer Phone Number</label>
-  <input id="phone" type="text" name="customerPhone" form="menu" required min="1000000000" max="9999999999">
+  <input id="phone" type="text" name="customerPhone" form="menu" min="1000000000" max="9999999999">
   <button type="submit" class="orderButton" form="menu">ORDER</button>
 </div>
 
-<form action="/cart" method="post" id="menu">
+<form action="/order" method="post" id="menu">
 
 <div class="inner">
 
@@ -50,7 +52,7 @@
               <button type="button" name="button" class="minus-btn <%=itemId%>">-</button>
               <span id="<%=itemId%>_Quantity">0</span>
               <button type="button" name="button" class="plus-btn <%=itemId%>">+</button>
-              <input type="hidden" id="<%=itemId%>" name="<%=item.name%>" value="0">
+              <input type="hidden" id="<%=itemId%>" name="item<%=item.id%>" value="0">
             </div>
           </div>
 

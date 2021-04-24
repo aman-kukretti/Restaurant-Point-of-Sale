@@ -22,7 +22,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: process.env.SQL_USER,
   password: process.env.SQL_PASSWORD,
-  database: "testDB"
+  database: process.env.SQL_DB_NAME
 })
 
 db.connect(function(err) {
@@ -72,7 +72,52 @@ app.get("/order", function(req, res) {
 })
 
 app.post("/order", function(req, res) {
-  res.send(req.body);
+  var data = [];
+  var keys = Object.keys(req.body);
+  var values = Object.values(req.body);
+
+  for(var i=0; i<keys.length; i++) {
+    if(keys[i].includes("item")) {
+      var quantity = values[i];
+      var itemId = keys[i].substr(4);
+      if(quantity!='0') {
+        const namepriceQuery = `SELECT id,${parseInt(quantity)} as quantity,name,price FROM item WHERE id=${parseInt(itemId)}`;
+        db.query(namepriceQuery, function(err, rows, response) {
+          if(err) throw err;
+          else {
+            data.push({itemid: rows[0].id, quantity: rows[0].quantity, name: rows[0].name, price: rows[0].price});
+          }
+        })
+      }
+    }
+  }
+
+  if(data.length===0) {
+    res.redirect("/order");
+  }
+  else {
+    var id = 0;
+    const sqlQuery = "SELECT COUNT(*)+1 as lastid FROM restOrder WHERE reqdate=CURDATE()";
+    db.query(sqlQuery, function(err, rows, response) {
+      if(err) throw err;
+      else {
+        id = rows[0].lastid;
+        for(var i=0; i<data.length; i++) {
+          const sqlQuery2 = `INSERT INTO contains VALUES(${id}, CURDATE(), ${data[i].itemid}, ${data[i].quantity})`;
+          db.query(sqlQuery2, function(err, response) {
+            if(err) throw err;
+          })
+        }
+        const sqlQuery3 = `INSERT INTO restOrder values(${id}, CURDATE(), CURTIME(), ${0}, ${1}, ${req.body.tableno}, "${req.body.customerName}", "${req.body.customerPhone}")`;
+        db.query(sqlQuery3, function(err, response) {
+          if(err) throw err;
+          else {
+            res.render("cart", {items: data});
+          }
+        })
+      }
+    })
+  }
 })
 
 app.get("/cart", function(req, res) {
@@ -102,10 +147,9 @@ app.post("/newitem", upload.single('itemImage'), async function(req, res) {
   db.query(sqlQuery, function(err,response) {
     if(err) throw err;
     else {
-      console.log("Item created successfully!");
       const sqlQuery2 = 'INSERT INTO belongsto VALUES(' + response.insertId + ', ' + req.body.category + ')';
-      db.query(sqlQuery2, function(err,response) {
-        if(err) throw err;
+      db.query(sqlQuery2, function(err2,response2) {
+        if(err2) throw err2;
         else {
           res.redirect("/newitem")
         }
@@ -123,47 +167,8 @@ app.post("/newcategory", function(req, res) {
   const sqlQuery = 'INSERT INTO category(name) VALUES("' + req.body.name + '")';
   db.query(sqlQuery, function(err,response) {
     if(err) throw err;
-    else {
-      console.log("Caegory created successfully!");
-      console.log(response);
-    }
   })
   res.redirect("/newcategory")
-})
-
-app.get("/createdb", function(req, res) {
-  const sqlQuery = "CREATE DATABASE testDB";
-  db.query(sqlQuery, function(err,response) {
-    if(err) throw err;
-    else {
-      res.send("Database created successfully!");
-      console.log(response);
-    }
-  })
-})
-
-app.get("/createtableitem", function(req, res) {
-  const sqlQuery = "CREATE TABLE item(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(35) NOT NULL, description VARCHAR(300), price INT NOT NULL, cat_id INT NOT NULL, isVeg BOOL NOT NULL, imagePath VARCHAR(200))";
-
-  db.query(sqlQuery, function(err,response) {
-    if(err) throw err;
-    else {
-      res.send("Items table created successfully!");
-      console.log(response);
-    }
-  })
-})
-
-app.get("/createtablecategory", function(req, res) {
-  const sqlQuery = "CREATE TABLE category(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(35) NOT NULL)";
-
-  db.query(sqlQuery, function(err,response) {
-    if(err) throw err;
-    else {
-      res.send("Categories Table created successfully!");
-      console.log(response);
-    }
-  })
 })
 
 app.listen(3000, function() {

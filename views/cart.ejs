@@ -11,17 +11,15 @@
     <h3 class="cartHeadingPrice">Price</h3>
   </div>
 
-  <div class="cartItem">
-    <h4>Veg Whopper</h4>
-    <p class="cartQuantity">1</p>
-    <p class="cartPrice"><span class="rupee-sign">₹</span>199</p>
-  </div>
+  <hr class="itemSeperator">
 
-  <div class="cartItem">
-    <h4>Chicken Whopper</h4>
-    <p class="cartQuantity">2</p>
-    <p class="cartPrice"><span class="rupee-sign">₹</span>259</p>
-  </div>
+  <%items.forEach(function(item) {%>
+    <div class="cartItem">
+      <h4 class="cartName cart-item-font"><%=item.name%></h4>
+      <p class="cartQuantity cart-item-font"><%=item.quantity%></p>
+      <p class="cartPrice cart-item-font"><span class="rupee-sign">₹</span><%=item.price%></p>
+    </div>
+  <%})%>
 
 </div>
 

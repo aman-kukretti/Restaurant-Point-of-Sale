@@ -1,0 +1,38 @@
+CREATE DATABASE testDB;
+
+CREATE TABLE contains(
+    -> orderid INT,
+    -> orderdate DATE,
+    -> itemid INT NOT NULL,
+    -> item_quantity INT NOT NULL,
+    -> PRIMARY KEY(orderid, orderdate, item_id)
+    -> );
+
+CREATE TABLE restOrder(
+    -> id int,
+    -> reqdate DATE,
+    -> reqtime TIME(2),
+    -> status BOOL DEFAULT 0,
+    -> empid INT NOT NULL,
+    -> tableno INT NOT NULL,
+    -> custname VARCHAR(40) NOT NULL,
+    -> custphone CHAR(10),
+    -> PRIMARY KEY(id, reqdate));
+
+CREATE TABLE item(
+    -> id INT PRIMARY KEY AUTO_INCREMENT,
+    -> name VARCHAR(35) NOT NULL,
+    -> description VARCHAR(300),
+    -> price INT NOT NULL,
+    -> cat_id INT NOT NULL,
+    -> isVeg BOOL NOT NULL,
+    -> imagePath VARCHAR(200));
+
+CREATE TABLE category(
+    -> id INT PRIMARY KEY AUTO_INCREMENT,
+    -> name VARCHAR(35) NOT NULL);
+
+CREATE TABLE belongsto(
+    -> item_id INT,
+    -> cat_id INT,
+    -> PRIMARY KEY(item_id, cat_id));

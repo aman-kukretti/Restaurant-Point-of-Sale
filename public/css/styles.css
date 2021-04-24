@@ -41,7 +41,7 @@ body {
 .inner {
   position: absolute;
   top: 10%;
-  left: 29%;
+  left: 28.5%;
   width: 40%;
   background-color: white;
   border-radius: 20px;
@@ -233,27 +233,32 @@ input:focus-visible {
   position: relative;
 }
 
-.cartHeadingBox h3 {
+.cartHeadingBox{
   font-size: 1.5rem;
-  display: inline-block;
   font-family: Roboto, sans-serif;
 }
 
-.cartHeadingItem {
-  position: relative;
-  left: 50px;
+.cartHeadingItem,.cartName {
+  width: 40%;
+  display: inline-block;
 }
 
-.cartHeadingPrice {
-  position: absolute;
-  right: 30px;
-  top: 0px;
+.cartHeadingQuantity,.cartQuantity {
+  width: 35%;
+  display: inline-block;
+  text-align: center;
 }
 
-.cartHeadingQuantity {
-  position: absolute;
-  right: 170px;
-  top: 0px;
+.cartHeadingPrice,.cartPrice {
+  display: inline-block;
+  width: 20%;
+  text-align: center;
+}
+
+.cart-item-font {
+  font-family: Montserrat, sans-serif;
+  font-weight: normal;
+  font-size: 1.2rem;
 }
 
 .formHeading {
