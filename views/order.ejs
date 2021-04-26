@@ -1,5 +1,7 @@
 <%- include('partials/header') -%>
 
+<a href="/dashboard"><i class="fas fa-hand-point-left"></i></a>
+
 <div class="sidebox">
   <label for="name">Customer Name</label>
   <input id="name" type="text" name="customerName" form="menu" required>
@@ -43,7 +45,7 @@
             <br>
             <p class="itemDescription"><%=item.description%></p>
 
-            <img class="itemImage" src="<%=item.imagePath%>" alt="<%=item.name%>">
+            <img class="itemImage" src="<%=`https://res.cloudinary.com/amankukretti/image/upload/v${item.imageVersion}/${item.image_public_id}.${item.imageFormat}`%>" alt="<%=item.name%>">
 
             <div class="quantityDisplayer">
 

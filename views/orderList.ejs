@@ -1,7 +1,35 @@
 <%- include('partials/header') -%>
 
+<a href="/dashboard"><i class="fas fa-hand-point-left"></i></a>
+
 <div class="header-text">
-  <h1>Current Orders</h1>
+  <h1>Orders</h1>
+  <form action="/orders" method="post">
+    <input class="dateInput" type="date" name="date" value="<%=date%>">
+    <button class="search-btn" type="submit" name="button">Find</button>
+  </form>
 </div>
+
+<%if(orders.length!=0) {%>
+<div class="orderSection">
+  <div class="orderBox" style="background-color:black;color:cyan;">
+    <h2 class="orderListName">Customer Name</h2>
+    <h2 class="orderListTable">Table</h2>
+    <h2 class="orderListStatus">Status</h2>
+    <h2 class="orderListTime">Time</h2>
+  </div>
+
+  <%orders.forEach((order) => {%>
+    <a href="/order/<%=order.id%>/<%=date.replace(/-/g,"")%>">
+      <div class="orderBox">
+        <h3 class="orderListName"><%=order.custname%></h3>
+        <h3 class="orderListTable"><%=order.tableno%></h3>
+        <h3 class="orderListStatus"><%=order.status%></h3>
+        <h3 class="orderListTime"><%=order.hour%>:<%=order.min%></h3>
+      </div>
+    </a>
+  <%});%>
+</div>
+<%}%>
 
 <%- include('partials/footer') -%>

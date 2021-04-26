@@ -287,6 +287,117 @@ input:focus-visible {
   font-size: 1.1rem;
 }
 
-.x {
-  margin-left: auto;
+.orderSection {
+  margin: 2% 5%;
+}
+
+.orderSection a {
+  text-decoration: none;
+}
+
+.orderBox {
+  padding: 1%;
+  margin-left: 4%;
+  margin-right: 4%;
+  background-color: cyan;
+  border-radius: 20px;
+  color: orangered;
+  font-family: Roboto, sans-serif;
+  font-size: 1.5rem;
+  display: inline;
+}
+
+.orderListName {
+  display: inline-block;
+  width: 45%;
+  text-align: left;
+}
+
+.orderListTable {
+  display: inline-block;
+  width: 15%;
+  text-align: left;
+}
+
+.orderListStatus {
+  display: inline-block;
+  width: 10%;
+  text-align: center;
+}
+
+.orderListTime {
+  display: inline-block;
+  width: 15%;
+  text-align: right;
+}
+
+.dateInput {
+  width: 200px;
+  height: 50px;
+  font-size: 1.25rem;
+  padding: 10px;
+}
+
+.search-btn {
+  width: 100px;
+  height: 50px;
+  font-size: 1.25rem;
+  padding: 10px;
+}
+
+.statusMarkButton {
+  font-size: 1.5rem;
+  background-color: cyan;
+  color: red;
+  font-family: 'Fugaz One', cursive;
+  padding: 10px;
+  position: absolute;
+  right: 50px;
+  top: 450px;
+  width: 340px;
+  border-radius: 20px;
+}
+
+.profile {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  text-align: right;
+}
+
+.cards {
+  text-align: center;
+  background-color: white;
+  margin-right: 10%;
+  margin-left: 10%;
+  border-radius: 20px;
+  padding: 1%;
+}
+
+.card {
+  height: 100px;
+  border-radius: 20px;
+  width: 27%;
+  background-color: #a34100;
+  color: cyan;
+  padding: 1% 2%;
+  display: inline-block;
+  text-align: left;
+  font-family: Roboto, sans-serif;
+  font-weight: bolder;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  font-size: 1.75rem;
+}
+
+.fas {
+  color: white;
+  font-size: 7rem;
+  position: absolute;
+  left: 30px;
+  top: 20px;
+}
+
+.fas:hover {
+  color: cyan;
 }

@@ -37,12 +37,16 @@ app.get("/", function(req, res) {
   res.render("login");
 })
 
-app.post("/login", function(req, res) {
+app.post("/", function(req, res) {
   const userName = req.body.username;
   const dept = req.body.dept;
   const pwd = req.body.pwd;
 
-  res.redirect("/order");
+  res.redirect("/dashboard");
+})
+
+app.get("/dashboard", function(req, res) {
+  res.render("dashboard");
 })
 
 app.get("/order", function(req, res) {
@@ -109,8 +113,9 @@ app.post("/order", function(req, res) {
         db.query(sqlQuery3, function(err, response) {
           if(err) throw err;
           else {
-            // res.render("cart", {items: data});
-            res.redirect(`/orders/today/${id}`);
+            const temp = (new Date()).toISOString();
+            const requestedDate = temp.substr(0,4) + temp.substr(5,2) + temp.substr(8,2);
+            res.redirect(`/order/${id}/${requestedDate}`);
           }
         })
       } else {
@@ -120,9 +125,11 @@ app.post("/order", function(req, res) {
   })
 })
 
-app.get("/orders/today/:orderId", function(req, res) {
-  const requestedid = parseInt(req.params.orderId);
-  const orderQuery = `SELECT name,item_quantity as quantity,price FROM (SELECT itemid,item_quantity FROM contains WHERE orderdate=CURDATE() and orderid=${requestedid})tblTmpc INNER JOIN (SELECT id,name,price FROM item)tblTemp ON itemid=id`;
+app.get("/order/:orderId/:orderDate", function(req, res) {
+  const requestedID = parseInt(req.params.orderId);
+  const temp = req.params.orderDate;
+  const requestedDate = temp.substr(0,4) + '-' + temp.substr(4,2) + '-' + temp.substr(6);
+  const orderQuery = `SELECT name,item_quantity as quantity,price FROM (SELECT itemid,item_quantity FROM contains WHERE orderdate="${requestedDate}" and orderid=${requestedID})tblTmpc INNER JOIN (SELECT id,name,price FROM item)tblTemp ON itemid=id`;
   db.query(orderQuery, function(err, rows, response) {
     if(err) throw err;
     else {
@@ -132,11 +139,10 @@ app.get("/orders/today/:orderId", function(req, res) {
       }
       const gstAmount = Math.round(amount*0.08);
       const topay = amount + gstAmount;
-      const customerQuery = `SELECT id,custname as name,DATE_FORMAT(reqdate, "%d %b %Y") as date,HOUR(reqtime) as hour, MINUTE(reqtime) as minute FROM restOrder WHERE id=${requestedid}`
+      const customerQuery = `SELECT id,status,custname as name,DATE_FORMAT(reqdate, "%Y-%m-%d") as statusDate,DATE_FORMAT(reqdate, "%d %b %Y") as date,HOUR(reqtime) as hour, MINUTE(reqtime) as minute FROM restOrder WHERE reqdate="${requestedDate}" AND id=${requestedID}`
       db.query(customerQuery, function(err, customer, response) {
         if(err) throw err;
         else {
-          console.log(typeof customer[0].date);
           res.render("cart", {
             items: rows,
             total: amount,
@@ -151,8 +157,33 @@ app.get("/orders/today/:orderId", function(req, res) {
   })
 })
 
-app.get("/orders/current", function(req, res) {
-  res.render("orderList");
+app.post("/order/:orderId/:orderDate", function(req, res) {
+  const requestedID = req.params.orderId;
+  const temp = req.params.orderDate;
+  const requestedDate = temp.substr(0,4) + '-' + temp.substr(4,2) + '-' + temp.substr(6);
+  console.log(requestedDate);
+  const statusMarkQuery = `UPDATE restOrder SET status=1 where id=${requestedID} AND reqdate="${requestedDate}"`;
+  db.query(statusMarkQuery, function(err,response) {
+    if(err) throw err;
+    else {
+      res.redirect("/orders");
+    }
+  })
+})
+
+app.get("/orders", function(req, res) {
+  res.render("orderList", {orders: [], date:(new Date()).toISOString().substr(0,10)});
+})
+
+app.post("/orders", function(req, res) {
+  const date = req.body.date;
+  const getOrders = `SELECT id,tableno,HOUR(reqtime) as hour,MINUTE(reqtime) as min,custname,status FROM restOrder WHERE reqdate="${date}"`;
+  db.query(getOrders, function(err, rows, response) {
+    if(err) throw err;
+    else {
+      res.render("orderList", {orders: rows, date: date});
+    }
+  })
 })
 
 app.get("/newitem", function(req, res) {
@@ -167,22 +198,18 @@ app.get("/newitem", function(req, res) {
 
 app.post("/newitem", upload.single('itemImage'), async function(req, res) {
   const result = await cloudinary.v2.uploader.upload(req.file.path)
+  console.log(result);
 
-  var sqlQuery = 'INSERT INTO item(name, description, price, isVeg, imagePath) values("';
-  sqlQuery += req.body.name + '", "';
-  sqlQuery += req.body.description + '", "';
-  sqlQuery += req.body.price + '", "';
-  sqlQuery += req.body.isVeg + '", "';
-  sqlQuery += result.secure_url + '")';
-
+  var sqlQuery = `INSERT INTO item(name, description, price, isVeg, imageVersion, image_public_id, imageFormat) values("${req.body.name}","${req.body.description}",${req.body.price},${req.body.isVeg},"${result.version}","${result.public_id}","${result.format}")`;
+  console.log(sqlQuery);
   db.query(sqlQuery, function(err,response) {
     if(err) throw err;
     else {
-      const sqlQuery2 = 'INSERT INTO belongsto VALUES(' + response.insertId + ', ' + req.body.category + ')';
+      const sqlQuery2 = `INSERT INTO belongsto VALUES(${response.insertId},${req.body.category})`;
       db.query(sqlQuery2, function(err2,response2) {
         if(err2) throw err2;
         else {
-          res.redirect("/newitem")
+          res.redirect("/dashboard")
         }
       });
     }
@@ -195,11 +222,11 @@ app.get("/newcategory", function(req, res) {
 })
 
 app.post("/newcategory", function(req, res) {
-  const sqlQuery = 'INSERT INTO category(name) VALUES("' + req.body.name + '")';
+  const sqlQuery = `INSERT INTO category(name) VALUES("${req.body.name}")`;
   db.query(sqlQuery, function(err,response) {
     if(err) throw err;
   })
-  res.redirect("/newcategory")
+  res.redirect("/dashboard")
 })
 
 app.listen(3000, function() {

@@ -1,5 +1,7 @@
 <%- include('partials/header') -%>
 
+<a href="/orders"><i class="fas fa-hand-point-left"></i></a>
+
 <div class="sidebox">
 
   <span class="cartOrderDetails">Order Number</span>
@@ -27,6 +29,10 @@
   <br>
 
 </div>
+
+<form action="/order/<%=customer.id%>/<%=customer.statusDate.replace(/-/g,"")%>" method="post">
+  <button class="statusMarkButton" type="post" name="button">MARK AS DONE</button>
+</form>
 
 <div class="inner">
   <h1 class="mainHeading">Order <%=customer.id%></h1>
