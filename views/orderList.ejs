@@ -1,6 +1,10 @@
 <%- include('partials/header') -%>
 
-<a href="/dashboard"><i class="fas fa-hand-point-left"></i></a>
+<%if(pos===3) {%>
+  <a href="/logout"><i class="fas fa-power-off"></i></a>
+<%} else {%>
+  <a href="/dashboard"><i class="fas fa-hand-point-left"></i></a>
+<%}%>
 
 <div class="header-text">
   <h1>Orders</h1>

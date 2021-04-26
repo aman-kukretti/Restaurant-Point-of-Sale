@@ -8,17 +8,21 @@
 
   <img src="images/tiger.png" alt="AlphaPOS" class="logo">
 
+  <%if(fail===1) {%>
+    <p class="failLogin">Incorrect Username or Password</p>
+  <%}%>
+
   <form action="/" method="post">
     <label for="user" class="formlabel">Username</label><br>
     <input type="text" class="login-text-field" name="user" id="user" placeholder="Enter your username"><br>
 
     <label for="position" class="formlabel">Department</label><br>
     <div class="checkboxes">
-      <input type="radio" class="checkboxicon" name="dept" id="kitchen" value="kitchen">
+      <input type="radio" class="checkboxicon" name="dept" id="kitchen" value="3" required>
       <label for="kitchen" class="checkbox-heading">Kitchen</label>
-      <input type="radio" class="checkboxicon" name="dept" id="front" value="front">
+      <input type="radio" class="checkboxicon" name="dept" id="front" value="2">
       <label for="front" class="checkbox-heading">Front of House</label>
-      <input type="radio" class="checkboxicon" name="dept" id="manager" value="manager">
+      <input type="radio" class="checkboxicon" name="dept" id="manager" value="1">
       <label for="Manager" class="checkbox-heading">Manager</label>
     </div>
     <br>

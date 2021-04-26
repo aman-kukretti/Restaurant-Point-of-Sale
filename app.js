@@ -33,46 +33,79 @@ db.connect(function(err) {
   }
 })
 
+var pos = 0;
+
 app.get("/", function(req, res) {
-  res.render("login");
+  res.render("login", {fail:0});
 })
 
 app.post("/", function(req, res) {
-  const userName = req.body.username;
+  const userName = req.body.user.toLowerCase();
   const dept = req.body.dept;
   const pwd = req.body.pwd;
 
-  res.redirect("/dashboard");
+  const empQuery = `SELECT id,name FROM employee WHERE pos_id=${dept} AND password="${pwd}"`;
+  db.query(empQuery, function(err, rows, response) {
+    if(err) throw err;
+    else {
+      rows.forEach(function(row) {
+        const name = row.name.replace(/ /g,"").toLowerCase() + row.id;
+        if(userName===name) {
+          pos = parseInt(dept);
+        }
+      })
+      if(pos===0) res.render("login", {fail:1});
+      else {
+        if(pos===3) res.redirect("/orders");
+        else res.redirect("/dashboard");
+      }
+    }
+  })
 })
 
 app.get("/dashboard", function(req, res) {
-  res.render("dashboard");
+  if(pos==1 || pos==2) {
+    res.render("dashboard");
+  } else {
+    pos=0;
+    res.render("login", {fail:1});
+  }
+})
+
+app.get("/logout", function(req, res) {
+  pos = 0;
+  res.redirect("/");
 })
 
 app.get("/order", function(req, res) {
-  var data = [];
-  const sqlQuery = "SELECT * from category";
+  if(pos===1 || pos===2) {
+    var data = [];
+    const sqlQuery = "SELECT * from category";
 
-  db.query(sqlQuery, function(err, catrows, response) {
-    if(err) throw err;
-    else {
-      catrows.forEach(function(category) {
-        const sqlQuery2 = "SELECT * from item WHERE id IN(SELECT item_id FROM belongsto WHERE cat_id=" + category.id + ")";
-        db.query(sqlQuery2, function(err, itemRows, response) {
-          if(err) throw err;
-          else {
-            data.push({
-              category: category,
-              items: itemRows
-            })
-          }
+    db.query(sqlQuery, function(err, catrows, response) {
+      if(err) throw err;
+      else {
+        catrows.forEach(function(category) {
+          const sqlQuery2 = "SELECT * from item WHERE id IN(SELECT item_id FROM belongsto WHERE cat_id=" + category.id + ")";
+          db.query(sqlQuery2, function(err, itemRows, response) {
+            if(err) throw err;
+            else {
+              data.push({
+                category: category,
+                items: itemRows
+              })
+            }
+          })
         })
-      })
-    }
-  })
-  setTimeout(() => {
-    res.render("order", {rows: data});
-  }, 1000);
+      }
+    })
+    setTimeout(() => {
+      res.render("order", {rows: data});
+    }, 1000);
+  } else {
+    pos=0;
+    res.render("login", {fail:1});
+  }
 })
 
 app.post("/order", function(req, res) {
@@ -126,35 +159,40 @@ app.post("/order", function(req, res) {
 })
 
 app.get("/order/:orderId/:orderDate", function(req, res) {
-  const requestedID = parseInt(req.params.orderId);
-  const temp = req.params.orderDate;
-  const requestedDate = temp.substr(0,4) + '-' + temp.substr(4,2) + '-' + temp.substr(6);
-  const orderQuery = `SELECT name,item_quantity as quantity,price FROM (SELECT itemid,item_quantity FROM contains WHERE orderdate="${requestedDate}" and orderid=${requestedID})tblTmpc INNER JOIN (SELECT id,name,price FROM item)tblTemp ON itemid=id`;
-  db.query(orderQuery, function(err, rows, response) {
-    if(err) throw err;
-    else {
-      var amount = 0;
-      for(var i=0; i<rows.length; i++) {
-        amount += rows[i].quantity * rows[i].price;
-      }
-      const gstAmount = Math.round(amount*0.08);
-      const topay = amount + gstAmount;
-      const customerQuery = `SELECT id,status,custname as name,DATE_FORMAT(reqdate, "%Y-%m-%d") as statusDate,DATE_FORMAT(reqdate, "%d %b %Y") as date,HOUR(reqtime) as hour, MINUTE(reqtime) as minute FROM restOrder WHERE reqdate="${requestedDate}" AND id=${requestedID}`
-      db.query(customerQuery, function(err, customer, response) {
-        if(err) throw err;
-        else {
-          res.render("cart", {
-            items: rows,
-            total: amount,
-            gst: gstAmount,
-            topay: topay,
-            customer: customer[0]
-          })
+  if(pos===1 || pos===2 || pos===3) {
+    const requestedID = parseInt(req.params.orderId);
+    const temp = req.params.orderDate;
+    const requestedDate = temp.substr(0,4) + '-' + temp.substr(4,2) + '-' + temp.substr(6);
+    const orderQuery = `SELECT name,item_quantity as quantity,price FROM (SELECT itemid,item_quantity FROM contains WHERE orderdate="${requestedDate}" and orderid=${requestedID})tblTmpc INNER JOIN (SELECT id,name,price FROM item)tblTemp ON itemid=id`;
+    db.query(orderQuery, function(err, rows, response) {
+      if(err) throw err;
+      else {
+        var amount = 0;
+        for(var i=0; i<rows.length; i++) {
+          amount += rows[i].quantity * rows[i].price;
         }
-      })
+        const gstAmount = Math.round(amount*0.08);
+        const topay = amount + gstAmount;
+        const customerQuery = `SELECT id,status,custname as name,DATE_FORMAT(reqdate, "%Y-%m-%d") as statusDate,DATE_FORMAT(reqdate, "%d %b %Y") as date,HOUR(reqtime) as hour, MINUTE(reqtime) as minute FROM restOrder WHERE reqdate="${requestedDate}" AND id=${requestedID}`
+        db.query(customerQuery, function(err, customer, response) {
+          if(err) throw err;
+          else {
+            res.render("cart", {
+              items: rows,
+              total: amount,
+              gst: gstAmount,
+              topay: topay,
+              customer: customer[0]
+            })
+          }
+        })
 
-    }
-  })
+      }
+    })
+  } else {
+    pos=0;
+    res.render("login", {fail:1});
+  }
 })
 
 app.post("/order/:orderId/:orderDate", function(req, res) {
@@ -172,7 +210,12 @@ app.post("/order/:orderId/:orderDate", function(req, res) {
 })
 
 app.get("/orders", function(req, res) {
-  res.render("orderList", {orders: [], date:(new Date()).toISOString().substr(0,10)});
+  if(pos===1 || pos===2 || pos===3) {
+    res.render("orderList", {pos: pos, orders: [], date:(new Date()).toISOString().substr(0,10)});
+  } else {
+    pos=0;
+    res.render("login", {fail:1});
+  }
 })
 
 app.post("/orders", function(req, res) {
@@ -187,39 +230,49 @@ app.post("/orders", function(req, res) {
 })
 
 app.get("/menu", function(req, res) {
-  var data = [];
-  const sqlQuery = "SELECT * from category";
+  if(pos===1) {
+    var data = [];
+    const sqlQuery = "SELECT * from category";
 
-  db.query(sqlQuery, function(err, catrows, response) {
-    if(err) throw err;
-    else {
-      catrows.forEach(function(category) {
-        const sqlQuery2 = "SELECT * from item WHERE id IN(SELECT item_id FROM belongsto WHERE cat_id=" + category.id + ")";
-        db.query(sqlQuery2, function(err, itemRows, response) {
-          if(err) throw err;
-          else {
-            data.push({
-              category: category,
-              items: itemRows
-            })
-          }
+    db.query(sqlQuery, function(err, catrows, response) {
+      if(err) throw err;
+      else {
+        catrows.forEach(function(category) {
+          const sqlQuery2 = "SELECT * from item WHERE id IN(SELECT item_id FROM belongsto WHERE cat_id=" + category.id + ")";
+          db.query(sqlQuery2, function(err, itemRows, response) {
+            if(err) throw err;
+            else {
+              data.push({
+                category: category,
+                items: itemRows
+              })
+            }
+          })
         })
-      })
-    }
-  })
-  setTimeout(() => {
-    res.render("viewMenu", {rows: data});
-  }, 1000);
+      }
+    })
+    setTimeout(() => {
+      res.render("viewMenu", {rows: data});
+    }, 1000);
+  } else {
+    pos=0;
+    res.render("login", {fail:1});
+  }
 })
 
 app.get("/newitem", function(req, res) {
-  const sqlQuery = "SELECT * FROM category";
-  db.query(sqlQuery, function(err, rows, response) {
-    if(err) throw err;
-    else {
-      res.render("itemForm", {categories: rows})
-    }
-  })
+  if(pos===1) {
+    const sqlQuery = "SELECT * FROM category";
+    db.query(sqlQuery, function(err, rows, response) {
+      if(err) throw err;
+      else {
+        res.render("itemForm", {categories: rows})
+      }
+    })
+  } else {
+    pos=0;
+    res.render("login", {fail:1});
+  }
 })
 
 app.post("/newitem", upload.single('itemImage'), async function(req, res) {
@@ -248,21 +301,26 @@ app.post("/newitem", upload.single('itemImage'), async function(req, res) {
 })
 
 app.get("/item/edit/:itemID/:publicID", function(req, res) {
-  const itemID = parseInt(req.params.itemID);
-  const public_id = req.params.publicID;
-  const itemQuery = `SELECT * from item INNER JOIN belongsto ON id=item_id WHERE id=${itemID}`;
-  db.query(itemQuery, function(err, rows, response) {
-    if(err) throw err;
-    else {
-      const sqlQuery = "SELECT * FROM category";
-      db.query(sqlQuery, function(err, catrows, response) {
-        if(err) throw err;
-        else {
-          res.render("itemEdit", {item: rows[0], categories: catrows})
-        }
-      })
-    }
-  })
+  if(pos===1) {
+    const itemID = parseInt(req.params.itemID);
+    const public_id = req.params.publicID;
+    const itemQuery = `SELECT * from item INNER JOIN belongsto ON id=item_id WHERE id=${itemID}`;
+    db.query(itemQuery, function(err, rows, response) {
+      if(err) throw err;
+      else {
+        const sqlQuery = "SELECT * FROM category";
+        db.query(sqlQuery, function(err, catrows, response) {
+          if(err) throw err;
+          else {
+            res.render("itemEdit", {item: rows[0], categories: catrows})
+          }
+        })
+      }
+    })
+  } else {
+    pos=0;
+    res.render("login", {fail:1});
+  }
 })
 
 app.post("/item/edit/:itemID/:publicID", upload.single('itemImage'), async function(req, res) {
@@ -298,28 +356,38 @@ app.post("/item/edit/:itemID/:publicID", upload.single('itemImage'), async funct
 })
 
 app.get("/item/delete/:itemID/:publicID", async function(req, res) {
-  const itemID = parseInt(req.params.itemID);
-  const public_id = req.params.publicID;
-  if(public_id!="null") {
-    result = await cloudinary.v2.uploader.destroy(public_id);
-  }
-  const deleteQuery = `DELETE FROM item WHERE id=${itemID}`;
-  db.query(deleteQuery, function(err, response) {
-    if(err) throw err;
-    else {
-      const deleteQuery2 = `DELETE FROM belongsto WHERE id=${itemID}`;
-      db.query(deleteQuery2, function(err, response) {
-        if(err) throw err;
-        else {
-          res.redirect("/menu");
-        }
-      })
+  if(pos===1) {
+    const itemID = parseInt(req.params.itemID);
+    const public_id = req.params.publicID;
+    if(public_id!="null") {
+      result = await cloudinary.v2.uploader.destroy(public_id);
     }
-  })
+    const deleteQuery = `DELETE FROM item WHERE id=${itemID}`;
+    db.query(deleteQuery, function(err, response) {
+      if(err) throw err;
+      else {
+        const deleteQuery2 = `DELETE FROM belongsto WHERE id=${itemID}`;
+        db.query(deleteQuery2, function(err, response) {
+          if(err) throw err;
+          else {
+            res.redirect("/menu");
+          }
+        })
+      }
+    })
+  } else {
+    pos=0;
+    res.render("login", {fail:1});
+  }
 })
 
 app.get("/newcategory", function(req, res) {
-  res.render("categoryForm")
+  if(pos===1) {
+    res.render("categoryForm")
+  } else {
+    pos=0;
+    res.render("login", {fail:1});
+  }
 })
 
 app.post("/newcategory", function(req, res) {

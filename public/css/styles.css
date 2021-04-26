@@ -428,3 +428,20 @@ input:focus-visible {
 a {
   text-decoration: none;
 }
+
+.fa-power-off {
+  color: white;
+  font-size: 3rem;
+  position: absolute;
+  left: 30px;
+  top: 20px;
+}
+
+.fa-power-off:hover {
+  color: cyan;
+}
+
+.failLogin {
+  font-size: 1.2rem;
+  color: red;
+}
