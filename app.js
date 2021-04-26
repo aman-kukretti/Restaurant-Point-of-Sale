@@ -186,6 +186,32 @@ app.post("/orders", function(req, res) {
   })
 })
 
+app.get("/menu", function(req, res) {
+  var data = [];
+  const sqlQuery = "SELECT * from category";
+
+  db.query(sqlQuery, function(err, catrows, response) {
+    if(err) throw err;
+    else {
+      catrows.forEach(function(category) {
+        const sqlQuery2 = "SELECT * from item WHERE id IN(SELECT item_id FROM belongsto WHERE cat_id=" + category.id + ")";
+        db.query(sqlQuery2, function(err, itemRows, response) {
+          if(err) throw err;
+          else {
+            data.push({
+              category: category,
+              items: itemRows
+            })
+          }
+        })
+      })
+    }
+  })
+  setTimeout(() => {
+    res.render("viewMenu", {rows: data});
+  }, 1000);
+})
+
 app.get("/newitem", function(req, res) {
   const sqlQuery = "SELECT * FROM category";
   db.query(sqlQuery, function(err, rows, response) {
@@ -197,10 +223,14 @@ app.get("/newitem", function(req, res) {
 })
 
 app.post("/newitem", upload.single('itemImage'), async function(req, res) {
-  const result = await cloudinary.v2.uploader.upload(req.file.path)
-  console.log(result);
+  var sqlQuery = "";
+  if(req.file === undefined) {
+    sqlQuery = `INSERT INTO item(name, description, price, isVeg) values("${req.body.name}","${req.body.description}",${req.body.price},${req.body.isVeg})`;
+  } else {
+    const result = await cloudinary.v2.uploader.upload(req.file.path);
+    sqlQuery = `INSERT INTO item(name, description, price, isVeg, imageVersion, image_public_id, imageFormat) values("${req.body.name}","${req.body.description}",${req.body.price},${req.body.isVeg},"${result.version}","${result.public_id}","${result.format}")`;
+  }
 
-  var sqlQuery = `INSERT INTO item(name, description, price, isVeg, imageVersion, image_public_id, imageFormat) values("${req.body.name}","${req.body.description}",${req.body.price},${req.body.isVeg},"${result.version}","${result.public_id}","${result.format}")`;
   console.log(sqlQuery);
   db.query(sqlQuery, function(err,response) {
     if(err) throw err;
@@ -215,6 +245,77 @@ app.post("/newitem", upload.single('itemImage'), async function(req, res) {
     }
   })
 
+})
+
+app.get("/item/edit/:itemID/:publicID", function(req, res) {
+  const itemID = parseInt(req.params.itemID);
+  const public_id = req.params.publicID;
+  const itemQuery = `SELECT * from item INNER JOIN belongsto ON id=item_id WHERE id=${itemID}`;
+  db.query(itemQuery, function(err, rows, response) {
+    if(err) throw err;
+    else {
+      const sqlQuery = "SELECT * FROM category";
+      db.query(sqlQuery, function(err, catrows, response) {
+        if(err) throw err;
+        else {
+          res.render("itemEdit", {item: rows[0], categories: catrows})
+        }
+      })
+    }
+  })
+})
+
+app.post("/item/edit/:itemID/:publicID", upload.single('itemImage'), async function(req, res) {
+  const itemID = parseInt(req.params.itemID);
+  const public_id = req.params.publicID;
+  var updateQuery = `UPDATE item SET name="${req.body.name}", description="${req.body.description}", price=${req.body.price}, isVeg=${req.body.isVeg}`;
+  if(req.file === undefined) {
+
+  } else if(public_id==="null") {
+    //upload image
+    const result = await cloudinary.v2.uploader.upload(req.file.path);
+    updateQuery += `, imageVersion="${result.version}", image_public_id="${result.public_id}", imageFormat="${result.format}"`;
+  } else {
+    //delete previous image, upload image with the same public id
+    const deleteResult = await cloudinary.v2.uploader.destroy(public_id);
+    console.log(deleteResult);
+    const result = await cloudinary.v2.uploader.upload(req.file.path);
+    updateQuery += `, imageVersion="${result.version}", image_public_id="${result.public_id}", imageFormat="${result.format}"`;
+  }
+  updateQuery += ` WHERE id=${itemID}`;
+  db.query(updateQuery, function(err, response) {
+    if(err) throw err;
+    else {
+      const updateQuery2 = `UPDATE belongsto SET cat_id=${req.body.category} WHERE item_id=${itemID}`;
+      db.query(updateQuery2, function(err, response) {
+        if(err) throw err;
+        else {
+          res.redirect("/menu");
+        }
+      })
+    }
+  })
+})
+
+app.get("/item/delete/:itemID/:publicID", async function(req, res) {
+  const itemID = parseInt(req.params.itemID);
+  const public_id = req.params.publicID;
+  if(public_id!="null") {
+    result = await cloudinary.v2.uploader.destroy(public_id);
+  }
+  const deleteQuery = `DELETE FROM item WHERE id=${itemID}`;
+  db.query(deleteQuery, function(err, response) {
+    if(err) throw err;
+    else {
+      const deleteQuery2 = `DELETE FROM belongsto WHERE id=${itemID}`;
+      db.query(deleteQuery2, function(err, response) {
+        if(err) throw err;
+        else {
+          res.redirect("/menu");
+        }
+      })
+    }
+  })
 })
 
 app.get("/newcategory", function(req, res) {

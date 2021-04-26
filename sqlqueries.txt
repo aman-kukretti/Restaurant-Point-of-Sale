@@ -38,3 +38,13 @@ CREATE TABLE belongsto(
     -> item_id INT,
     -> cat_id INT,
     -> PRIMARY KEY(item_id, cat_id));
+
+CREATE TABLE employee(
+    -> id INT PRIMARY KEY AUTO_INCREMENT,
+    -> name VARCHAR(50) NOT NULL,
+    -> pos_id INT NOT NULL,
+    -> dob DATE NOT NULL,
+    -> password VARCHAR(30) NOT NULL,
+    -> contact CHAR(10) NOT NULL,
+    -> email VARCHAR(50)
+    -> );

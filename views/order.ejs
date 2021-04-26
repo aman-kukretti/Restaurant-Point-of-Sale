@@ -31,7 +31,11 @@
 
           <hr class="itemSeperator">
 
-          <div class="item">
+          <%if(item.imageVersion!=null) {%>
+            <div class="item">
+          <%} else {%>
+            <div class="item" style="height:80px;">
+          <%}%>
 
             <%if( item.isVeg ) {%>
               <img class="itemType" src="images/icons/veg.png" alt="VEG">
@@ -45,9 +49,12 @@
             <br>
             <p class="itemDescription"><%=item.description%></p>
 
-            <img class="itemImage" src="<%=`https://res.cloudinary.com/amankukretti/image/upload/v${item.imageVersion}/${item.image_public_id}.${item.imageFormat}`%>" alt="<%=item.name%>">
-
-            <div class="quantityDisplayer">
+            <%if(item.imageVersion!=null) {%>
+              <img class="itemImage" src="<%=`https://res.cloudinary.com/amankukretti/image/upload/v${item.imageVersion}/${item.image_public_id}.${item.imageFormat}`%>" alt="<%=item.name%>">
+              <div class="quantityDisplayer">
+            <%} else {%>
+              <div class="quantityDisplayer" style="top:0px;">
+            <%}%>
 
               <% var itemId = item.name.replace(/ /g, "_") %>
 

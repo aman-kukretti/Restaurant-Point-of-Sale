@@ -1,0 +1,67 @@
+<%- include('partials/header') -%>
+
+<a href="/menu"><i class="fas fa-hand-point-left"></i></a>
+
+<div class="inner">
+  <h1 class="mainHeading"><%=item.name%></h1>
+
+  <hr class="categorySeperator">
+
+  <%var publicID="null"%>
+  <%if(item.imageVersion!=null) {publicID = item.image_public_id;}%>
+
+  <form class="" action="/item/edit/<%=item.id%>/<%=publicID%>" method="post" enctype="multipart/form-data">
+    <h3 class="formHeading">Dish Name</h3>
+    <input type="text" name="name" value="<%=item.name%>" required>
+    <br>
+    <h3 class="formHeading">About the dish</h3>
+    <textarea name="description" rows="8" cols="80" style="width:100%;"><%=item.description%></textarea>
+    <h3 class="formHeading">Price</h3>
+    <input type="number" name="price" required value="<%=item.price%>">
+    <br>
+    <h3 class="formHeading">Category</h3>
+    <div class="checkboxes">
+      <%categories.forEach(function(category) {%>
+        <div style="display: inline; white-space: nowrap;">
+          <%if(item.cat_id === category.id) {%>
+            <input type="radio" class="checkboxicon" name="category" id="<%=category.name%>" value="<%=category.id%>" required checked>
+          <%} else {%>
+            <input type="radio" class="checkboxicon" name="category" id="<%=category.name%>" value="<%=category.id%>" required>
+          <%}%>
+          <label for="<%=category.name%>" class="checkbox-heading"><%=category.name%></label>
+        </div>
+      <%})%>
+    </div>
+
+    <h3 class="formHeading">Type</h3>
+    <div class="checkboxes">
+      <input type="radio" class="checkboxicon" name="isVeg" id="veg" value="1"
+      <%if(item.isVeg===1) {%>
+              checked>
+      <%} else {%>
+              >
+      <%}%>
+      <label for="veg" class="checkbox-heading">Veg</label>
+
+      <input type="radio" class="checkboxicon" name="isVeg" id="nonveg" value="0"
+      <%if(item.isVeg===0) {%>
+              checked>
+      <%} else {%>
+              >
+      <%}%>
+      <label for="nonveg" class="checkbox-heading">Non-Veg</label>
+    </div>
+
+    <h3 class="formHeading">Image Upload</h3>
+    <input type="file" name="itemImage"><br>
+    <%if(item.imageVersion!=null) {%>
+      <img style="height:100px;" src="<%=`https://res.cloudinary.com/amankukretti/image/upload/v${item.imageVersion}/${item.image_public_id}.${item.imageFormat}`%>" alt="<%=item.name%>">
+    <%}%>
+    <br>
+
+    <button type="submit" class="submit-button-item">Confirm</button>
+  </form>
+
+</div>
+
+<%- include('partials/footer') -%>

@@ -1,0 +1,61 @@
+<%- include('partials/header') -%>
+
+<a href="/dashboard"><i class="fas fa-hand-point-left"></i></a>
+
+
+<div class="inner">
+
+  <h1 class="mainHeading">Menu</h1>
+
+  <%rows.forEach(function(row) {%>
+    <%if(row.items.length === 0) {} else {%>
+
+    <hr class="categorySeperator">
+
+    <div class="itemCategory" id="<%=row.category.name%>">
+      <h1 class="categoryTitle"><%=row.category.name%></h1>
+      <h3 class="itemCount"><%=row.items.length%> ITEMS</h3>
+
+      <%row.items.forEach(function(item) {%>
+
+          <hr class="itemSeperator">
+
+          <%if(item.imageVersion!=null) {%>
+            <div class="item">
+          <%} else {%>
+            <div class="item" style="height:100px;">
+          <%}%>
+
+            <%if( item.isVeg ) {%>
+              <img class="itemType" src="images/icons/veg.png" alt="VEG">
+            <%} else {%>
+              <img class="itemType" src="images/icons/nonveg.png" alt="NON VEG">
+            <%}%>
+
+            <h2 class="itemTitle"><%=item.name%></h2>
+
+            <span class="itemPrice"><span class="rupee-sign">₹</span><%=item.price%></span>
+            <br>
+            <%var publicID="null"%>
+            <%if(item.imageVersion!=null) {publicID = item.image_public_id;}%>
+
+            <p class="itemDescription"><%=item.description%></p>
+            <a href="<%=`/item/edit/${item.id}/${publicID}`%>">
+              <button name="editButton" class="editButton"><i class="far fa-pencil"></i></button>
+            </a>
+            <a href="<%=`/item/delete/${item.id}/${publicID}`%>">
+              <button name="delButton" class="delButton"><i class="far fa-trash-alt"></i></button>
+            </a>
+
+            <%if(item.imageVersion!=null) {%>
+              <img class="itemImage" src="<%=`https://res.cloudinary.com/amankukretti/image/upload/v${item.imageVersion}/${item.image_public_id}.${item.imageFormat}`%>" alt="<%=item.name%>">
+            <%}%>
+          </div>
+
+      <%})%>
+    <%}%>
+  <%})%>
+</div>
+
+
+<%- include('partials/footer') -%>
