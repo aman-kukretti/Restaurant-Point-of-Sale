@@ -22,21 +22,23 @@
       <h3>View Orders</h3>
     </div>
   </a>
-  <a href="/menu">
-    <div class="card">
-      <h3>Menu</h3>
-    </div>
-  </a>
-  <a href="/newitem">
-    <div class="card">
-      <h3>New Item</h3>
-    </div>
-  </a>
-  <a href="/newcategory">
-    <div class="card">
-      <h3>New Category</h3>
-    </div>
-  </a>
+  <%if(pos==1) {%>
+    <a href="/menu">
+      <div class="card">
+        <h3>Menu</h3>
+      </div>
+    </a>
+    <a href="/newitem">
+      <div class="card">
+        <h3>New Item</h3>
+      </div>
+    </a>
+    <a href="/newcategory">
+      <div class="card">
+        <h3>New Category</h3>
+      </div>
+    </a>
+  <%}%>
 </div>
 
 <%- include('partials/footer') -%>

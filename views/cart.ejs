@@ -30,9 +30,11 @@
 
 </div>
 
-<form action="/order/<%=customer.id%>/<%=customer.statusDate.replace(/-/g,"")%>" method="post">
-  <button class="statusMarkButton" type="post" name="button">MARK AS DONE</button>
-</form>
+<%if(customer.status===0) {%>
+  <form action="/order/<%=customer.id%>/<%=customer.statusDate.replace(/-/g,"")%>" method="post">
+    <button class="statusMarkButton" type="post" name="button">MARK AS DONE</button>
+  </form>
+<%}%>
 
 <div class="inner">
   <h1 class="mainHeading">Order <%=customer.id%></h1>

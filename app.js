@@ -65,7 +65,7 @@ app.post("/", function(req, res) {
 
 app.get("/dashboard", function(req, res) {
   if(pos==1 || pos==2) {
-    res.render("dashboard");
+    res.render("dashboard", {pos: pos});
   } else {
     pos=0;
     res.render("login", {fail:1});
@@ -220,11 +220,11 @@ app.get("/orders", function(req, res) {
 
 app.post("/orders", function(req, res) {
   const date = req.body.date;
-  const getOrders = `SELECT id,tableno,HOUR(reqtime) as hour,MINUTE(reqtime) as min,custname,status FROM restOrder WHERE reqdate="${date}"`;
+  const getOrders = `SELECT id,tableno,HOUR(reqtime) as hour,MINUTE(reqtime) as min,DATE_FORMAT(reqtime, "%r") as time,custname,status FROM restOrder WHERE reqdate="${date}"`;
   db.query(getOrders, function(err, rows, response) {
     if(err) throw err;
     else {
-      res.render("orderList", {orders: rows, date: date});
+      res.render("orderList", {pos:pos, orders: rows, date: date});
     }
   })
 })
