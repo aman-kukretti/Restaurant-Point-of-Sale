@@ -36,29 +36,41 @@ db.connect(function(err) {
 var pos = 0;
 
 app.get("/", function(req, res) {
+  pos=0;
   res.render("login", {fail:0});
 })
 
 app.post("/", function(req, res) {
+  pos=0;
   const userName = req.body.user.toLowerCase();
-  const dept = req.body.dept;
+  const dept = parseInt(req.body.dept);
   const pwd = req.body.pwd;
 
   const empQuery = `SELECT id,name FROM employee WHERE pos_id=${dept} AND password="${pwd}"`;
   db.query(empQuery, function(err, rows, response) {
     if(err) throw err;
     else {
+      console.log(rows);
       rows.forEach(function(row) {
         const name = row.name.replace(/ /g,"").toLowerCase() + row.id;
         if(userName===name) {
-          pos = parseInt(dept);
+          const query = `SELECT access from designation WHERE id=${dept}`;
+          db.query(query, function(err, des, response) {
+            if(err) throw err;
+            else {
+              pos = parseInt(des[0].access);
+              console.log(des);
+            }
+          })
         }
       })
-      if(pos===0) res.render("login", {fail:1});
-      else {
-        if(pos===3) res.redirect("/orders");
-        else res.redirect("/dashboard");
-      }
+      setTimeout(()=>{
+        if(pos===0) res.render("login", {fail:1});
+        else {
+          if(pos===3) res.redirect("/orders");
+          else res.redirect("/dashboard");
+        }
+      },2000)
     }
   })
 })
@@ -398,6 +410,50 @@ app.post("/newcategory", function(req, res) {
   res.redirect("/dashboard")
 })
 
-app.listen(3000, function() {
+app.get("/newemployee", function(req, res) {
+  if(pos===1) {
+    const positionsQuery = "SELECT * FROM designation";
+    db.query(positionsQuery, function(err, rows, response) {
+      if(err) throw err;
+      else {
+        res.render("employeeForm", {positions: rows})
+      }
+    })
+  } else {
+    pos=0;
+    res.render("login", {fail:1});
+  }
+})
+
+app.post("/newemployee", function(req, res) {
+  console.log(req.body)
+  const insertQuery = `INSERT INTO employee(name,pos_id,dob,password,contact,email) values("${req.body.name}",${req.body.position},"${req.body.dob}","${req.body.pass}","${req.body.contact}","${req.body.email}")`;
+
+  db.query(insertQuery, function(err,response) {
+    if(err) throw err;
+    else {
+      res.redirect("/dashboard");
+    }
+  })
+})
+
+app.get("/newposition", function(req, res) {
+  if(pos===1) {
+    res.render("positionForm")
+  } else {
+    pos=0;
+    res.render("login", {fail:1});
+  }
+})
+
+app.post("/newposition", function(req, res) {
+  const sqlQuery = `INSERT INTO designation(name,salary) VALUES("${req.body.name}",${req.body.salary})`;
+  db.query(sqlQuery, function(err,response) {
+    if(err) throw err;
+  })
+  res.redirect("/dashboard")
+})
+
+app.listen(process.env.PORT || 3000, function() {
   console.log("Server is running on port 3000.");
 })

@@ -1,0 +1,45 @@
+<%- include('partials/header') -%>
+
+<a href="/dashboard"><i class="fas fa-hand-point-left"></i></a>
+
+<div class="inner">
+  <h1 class="mainHeading">New Employee</h1>
+
+  <hr class="categorySeperator">
+
+  <form class="" action="/newemployee" method="post">
+    <h3 class="formHeading">Employee Name</h3>
+    <input type="text" name="name" required>
+    <br>
+
+    <h3 class="formHeading">Date of Birth</h3>
+    <input type="date" name="dob" required>
+    <br>
+    <h3 class="formHeading">Position</h3>
+    <div class="checkboxes">
+      <%positions.forEach(function(position) {%>
+        <div class="" style="display: inline;white-space: nowrap;">
+          <input type="radio" class="checkboxicon" name="position" id="<%=position.name%>" value="<%=position.id%>" required>
+          <label for="<%=position.name%>" class="checkbox-heading"><%=position.name%></label>
+        </div>
+      <%})%>
+    </div>
+
+    <h3 class="formHeading">Contact</h3>
+    <input type="text" name="contact" required>
+    <br>
+
+    <h3 class="formHeading">Email</h3>
+    <input type="text" name="email" required>
+    <br>
+
+    <h3 class="formHeading">Password</h3>
+    <input type="text" name="pass" required>
+    <br>
+
+    <button type="submit" class="submit-button-item">Confirm</button>
+  </form>
+
+</div>
+
+<%- include('partials/footer') -%>

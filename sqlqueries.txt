@@ -48,3 +48,8 @@ CREATE TABLE employee(
     -> contact CHAR(10) NOT NULL,
     -> email VARCHAR(50)
     -> );
+
+CREATE TABLE designation(
+    -> id INT PRIMARY KEY AUTO_INCREMENT,
+    -> name VARCHAR(35) NOT NULL,
+    -> salary INT NOT NULL);
