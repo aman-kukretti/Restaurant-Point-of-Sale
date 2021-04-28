@@ -9,7 +9,7 @@
   <br><hr class="itemSeperator">
 
   <span class="cartOrderDetails"><%=customer.date%></span>
-  <span class="cartOrderDetails" style="float: right;"><%=customer.hour%>:<%=customer.minute%></span>
+  <span class="cartOrderDetails" style="float: right;"><%=customer.time%></span>
   <br><hr class="itemSeperator">
 
   <span class="cartOrderDetails x">Name</span>
@@ -26,7 +26,10 @@
 
   <span class="cartOrderDetails">To Pay</span>
   <span class="cartOrderDetails" style="float: right;"><span class="rupee-sign">₹</span><%=topay%></span>
-  <br>
+  <br><hr class="itemSeperator">
+
+  <span class="cartOrderDetails x">Employee</span>
+  <span class="cartOrderDetails" style="float: right;"><%=customer.empname%></span>
 
 </div>
 

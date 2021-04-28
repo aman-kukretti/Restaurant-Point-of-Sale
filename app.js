@@ -34,14 +34,17 @@ db.connect(function(err) {
 })
 
 var pos = 0;
+var empid = 0;
 
 app.get("/", function(req, res) {
   pos=0;
+  empid=0;
   res.render("login", {fail:0});
 })
 
 app.post("/", function(req, res) {
   pos=0;
+  empid=0;
   const userName = req.body.user.toLowerCase();
   const dept = parseInt(req.body.dept);
   const pwd = req.body.pwd;
@@ -50,7 +53,6 @@ app.post("/", function(req, res) {
   db.query(empQuery, function(err, rows, response) {
     if(err) throw err;
     else {
-      console.log(rows);
       rows.forEach(function(row) {
         const name = row.name.replace(/ /g,"").toLowerCase() + row.id;
         if(userName===name) {
@@ -59,7 +61,7 @@ app.post("/", function(req, res) {
             if(err) throw err;
             else {
               pos = parseInt(des[0].access);
-              console.log(des);
+              empid = row.id;
             }
           })
         }
@@ -80,12 +82,14 @@ app.get("/dashboard", function(req, res) {
     res.render("dashboard", {pos: pos});
   } else {
     pos=0;
+    empid=0;
     res.render("login", {fail:1});
   }
 })
 
 app.get("/logout", function(req, res) {
   pos = 0;
+  empid=0;
   res.redirect("/");
 })
 
@@ -116,6 +120,7 @@ app.get("/order", function(req, res) {
     }, 1000);
   } else {
     pos=0;
+    empid=0;
     res.render("login", {fail:1});
   }
 })
@@ -154,7 +159,7 @@ app.post("/order", function(req, res) {
             if(err) throw err;
           })
         }
-        const sqlQuery3 = `INSERT INTO restOrder values(${id}, CURDATE(), CURTIME(), ${0}, ${1}, ${req.body.tableno}, "${req.body.customerName}", "${req.body.customerPhone}")`;
+        const sqlQuery3 = `INSERT INTO restOrder values(${id}, CURDATE(), CURTIME(), ${0}, ${empid}, ${req.body.tableno}, "${req.body.customerName}", "${req.body.customerPhone}")`;
         db.query(sqlQuery3, function(err, response) {
           if(err) throw err;
           else {
@@ -185,7 +190,7 @@ app.get("/order/:orderId/:orderDate", function(req, res) {
         }
         const gstAmount = Math.round(amount*0.08);
         const topay = amount + gstAmount;
-        const customerQuery = `SELECT id,status,custname as name,DATE_FORMAT(reqdate, "%Y-%m-%d") as statusDate,DATE_FORMAT(reqdate, "%d %b %Y") as date,HOUR(reqtime) as hour, MINUTE(reqtime) as minute FROM restOrder WHERE reqdate="${requestedDate}" AND id=${requestedID}`
+        const customerQuery = `SELECT tbl1.id as id,tbl2.name as empname,empid,status,custname as name,DATE_FORMAT(reqdate, "%Y-%m-%d") as statusDate,DATE_FORMAT(reqdate, "%d %b %Y") as date,DATE_FORMAT(reqtime, "%r") as time FROM (SELECT * FROM restOrder WHERE reqdate="${requestedDate}" AND id=${requestedID})tbl1 INNER JOIN (SELECT id,name FROM employee)tbl2 ON empid=tbl2.id`;
         db.query(customerQuery, function(err, customer, response) {
           if(err) throw err;
           else {
@@ -203,6 +208,7 @@ app.get("/order/:orderId/:orderDate", function(req, res) {
     })
   } else {
     pos=0;
+    empid=0;
     res.render("login", {fail:1});
   }
 })
@@ -226,13 +232,14 @@ app.get("/orders", function(req, res) {
     res.render("orderList", {pos: pos, orders: [], date:(new Date()).toISOString().substr(0,10)});
   } else {
     pos=0;
+    empid=0;
     res.render("login", {fail:1});
   }
 })
 
 app.post("/orders", function(req, res) {
   const date = req.body.date;
-  const getOrders = `SELECT id,tableno,HOUR(reqtime) as hour,MINUTE(reqtime) as min,DATE_FORMAT(reqtime, "%r") as time,custname,status FROM restOrder WHERE reqdate="${date}"`;
+  const getOrders = `SELECT id,tableno,DATE_FORMAT(reqtime, "%r") as time,custname,status,empid FROM restOrder WHERE reqdate="${date}"`;
   db.query(getOrders, function(err, rows, response) {
     if(err) throw err;
     else {
@@ -268,6 +275,7 @@ app.get("/menu", function(req, res) {
     }, 1000);
   } else {
     pos=0;
+    empid=0;
     res.render("login", {fail:1});
   }
 })
@@ -283,6 +291,7 @@ app.get("/newitem", function(req, res) {
     })
   } else {
     pos=0;
+    empid=0;
     res.render("login", {fail:1});
   }
 })
@@ -331,6 +340,7 @@ app.get("/item/edit/:itemID/:publicID", function(req, res) {
     })
   } else {
     pos=0;
+    empid=0;
     res.render("login", {fail:1});
   }
 })
@@ -378,7 +388,7 @@ app.get("/item/delete/:itemID/:publicID", async function(req, res) {
     db.query(deleteQuery, function(err, response) {
       if(err) throw err;
       else {
-        const deleteQuery2 = `DELETE FROM belongsto WHERE id=${itemID}`;
+        const deleteQuery2 = `DELETE FROM belongsto WHERE item_id=${itemID}`;
         db.query(deleteQuery2, function(err, response) {
           if(err) throw err;
           else {
@@ -389,6 +399,7 @@ app.get("/item/delete/:itemID/:publicID", async function(req, res) {
     })
   } else {
     pos=0;
+    empid=0;
     res.render("login", {fail:1});
   }
 })
@@ -398,6 +409,7 @@ app.get("/newcategory", function(req, res) {
     res.render("categoryForm")
   } else {
     pos=0;
+    empid=0;
     res.render("login", {fail:1});
   }
 })
@@ -421,6 +433,7 @@ app.get("/newemployee", function(req, res) {
     })
   } else {
     pos=0;
+    empid=0;
     res.render("login", {fail:1});
   }
 })
@@ -442,6 +455,7 @@ app.get("/newposition", function(req, res) {
     res.render("positionForm")
   } else {
     pos=0;
+    empid=0;
     res.render("login", {fail:1});
   }
 })

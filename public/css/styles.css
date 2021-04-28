@@ -309,17 +309,23 @@ input:focus-visible {
 
 .orderListName {
   display: inline-block;
-  width: 45%;
+  width: 40%;
   text-align: left;
 }
 
 .orderListTable {
   display: inline-block;
-  width: 15%;
+  width: 10%;
   text-align: left;
 }
 
 .orderListStatus {
+  display: inline-block;
+  width: 10%;
+  text-align: center;
+}
+
+.orderListEmp {
   display: inline-block;
   width: 10%;
   text-align: center;
@@ -353,7 +359,7 @@ input:focus-visible {
   padding: 10px;
   position: absolute;
   right: 50px;
-  top: 450px;
+  top: 480px;
   width: 340px;
   border-radius: 20px;
 }
