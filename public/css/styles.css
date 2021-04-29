@@ -309,25 +309,25 @@ input:focus-visible {
 
 .orderListName {
   display: inline-block;
-  width: 40%;
+  width: 25%;
   text-align: left;
 }
 
 .orderListTable {
   display: inline-block;
-  width: 10%;
-  text-align: left;
+  width: 15%;
+  text-align: center;
 }
 
 .orderListStatus {
   display: inline-block;
-  width: 10%;
+  width: 15%;
   text-align: center;
 }
 
 .orderListEmp {
   display: inline-block;
-  width: 10%;
+  width: 15%;
   text-align: center;
 }
 

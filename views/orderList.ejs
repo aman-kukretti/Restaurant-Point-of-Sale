@@ -9,6 +9,8 @@
 <div class="header-text">
   <h1>Orders</h1>
   <form action="/orders" method="post">
+    <input type="checkbox" name="state">
+    <label for="state" class="formLabel">Only Active Orders</label><br><br>
     <input class="dateInput" type="date" name="date" value="<%=date%>">
     <button class="search-btn" type="submit" name="button">Find</button>
   </form>

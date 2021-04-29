@@ -239,7 +239,12 @@ app.get("/orders", function(req, res) {
 
 app.post("/orders", function(req, res) {
   const date = req.body.date;
-  const getOrders = `SELECT id,tableno,DATE_FORMAT(reqtime, "%r") as time,custname,status,empid FROM restOrder WHERE reqdate="${date}"`;
+  let getOrders = ``;
+  if(req.body.state === "on") {
+    getOrders = `SELECT id,tableno,DATE_FORMAT(reqtime, "%r") as time,custname,status,empid FROM restOrder WHERE reqdate="${date}" AND status=0`;
+  } else {
+    getOrders = `SELECT id,tableno,DATE_FORMAT(reqtime, "%r") as time,custname,status,empid FROM restOrder WHERE reqdate="${date}"`;
+  }
   db.query(getOrders, function(err, rows, response) {
     if(err) throw err;
     else {
