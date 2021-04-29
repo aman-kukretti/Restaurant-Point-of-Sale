@@ -3,14 +3,25 @@
 <a href="/employees"><i class="fas fa-hand-point-left"></i></a>
 
 <div class="inner">
-  <h1 class="mainHeading">New Role</h1>
+  <h1 class="mainHeading">Edit Role</h1>
 
   <hr class="categorySeperator">
 
-  <form class="" action="/newposition" method="post">
+  <form class="" action="/position/edit" method="post">
+    <h3 class="formHeading">Role to edit</h3>
+    <div class="checkboxes">
+      <%positions.forEach(function(position) {%>
+        <div class="" style="display: inline;white-space: nowrap;">
+          <input type="radio" class="checkboxicon" name="position" id="<%=position.name%>" value="<%=position.id%>" required>
+          <label for="<%=position.name%>" class="checkbox-heading"><%=position.name%></label>
+        </div>
+      <%})%>
+    </div>
+
     <h3 class="formHeading">Role Title</h3>
     <input type="text" name="name" required>
     <br>
+
     <h3 class="formHeading">Hourly Pay</h3>
     <input type="number" name="salary" required>
 

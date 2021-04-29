@@ -516,6 +516,33 @@ app.post("/newposition", function(req, res) {
   res.redirect("/dashboard")
 })
 
+app.get("/position/edit", function(req, res) {
+  if(pos===1) {
+    const empID = parseInt(req.params.empID);
+    const positionQuery = "SELECT * FROM designation";
+    db.query(positionQuery, function(err, posrows, response) {
+      if(err) throw err;
+      else {
+        res.render("posEdit", {positions: posrows})
+      }
+    })
+  } else {
+    pos=0;
+    empid=0;
+    res.render("login", {fail:1});
+  }
+})
+
+app.post("/position/edit", function(req, res) {
+  const editQuery = `UPDATE designation SET name="${req.body.name}",salary=${req.body.salary},access=${req.body.access} WHERE id=${req.body.position}`;
+  db.query(editQuery, function(err, posrows, response) {
+    if(err) throw err;
+    else {
+      res.redirect("/employees")
+    }
+  })
+})
+
 app.get("/employees", function(req, res) {
   if(pos==1) {
     const employeeQuery = `SELECT employee.id as id,employee.name as name,tbl.name as posname,contact FROM employee INNER JOIN (select id,name from designation)tbl ON pos_id=tbl.id`;
