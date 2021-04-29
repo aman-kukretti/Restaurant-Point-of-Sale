@@ -441,13 +441,61 @@ app.get("/newemployee", function(req, res) {
 
 app.post("/newemployee", function(req, res) {
   const insertQuery = `INSERT INTO employee(name,pos_id,dob,password,contact,email) values("${req.body.name}",${req.body.position},"${req.body.dob}","${req.body.pass}","${req.body.contact}","${req.body.email}")`;
-
   db.query(insertQuery, function(err,response) {
     if(err) throw err;
     else {
       res.redirect("/dashboard");
     }
   })
+})
+
+app.get("/employee/edit/:empID", function(req, res) {
+  if(pos===1) {
+    const empID = parseInt(req.params.empID);
+    const empQuery = `SELECT * FROM employee WHERE id=${empID}`;
+    db.query(empQuery, function(err, rows, response) {
+      if(err) throw err;
+      else {
+        const positionQuery = "SELECT * FROM designation";
+        db.query(positionQuery, function(err, posrows, response) {
+          if(err) throw err;
+          else {
+            res.render("empEdit", {positions: posrows, employee:rows[0]})
+          }
+        })
+      }
+    })
+  } else {
+    pos=0;
+    empid=0;
+    res.render("login", {fail:1});
+  }
+})
+
+app.post("/employee/edit/:empID", function(req, res) {
+  const empID = parseInt(req.params.empID);
+  const emp = req.body;
+  const updateQuery = `UPDATE employee SET name="${emp.name}",pos_id=${emp.position},contact="${emp.contact}",email="${emp.email}",password="${emp.pass}" WHERE id=${empID}`;
+  db.query(updateQuery, function(err, rows, response) {
+    if(err) throw err;
+    else res.redirect("/employees");
+  })
+})
+
+app.get("/employee/delete/:empID", function(req, res) {
+  if(pos===1) {
+    const empID = parseInt(req.params.empID);
+    const emp = req.body;
+    const deleteQuery = `DELETE FROM employee WHERE id=${empID}`;
+    db.query(deleteQuery, function(err, rows, response) {
+      if(err) throw err;
+      else res.redirect("/employees");
+    })
+  } else {
+    pos=0;
+    empid=0;
+    res.render("login", {fail:1});
+  }
 })
 
 app.get("/newposition", function(req, res) {
@@ -469,13 +517,19 @@ app.post("/newposition", function(req, res) {
 })
 
 app.get("/employees", function(req, res) {
-  const employeeQuery = `SELECT employee.id as id,employee.name as name,tbl.name as posname,contact FROM employee INNER JOIN (select id,name from designation)tbl ON pos_id=tbl.id`;
-  db.query(employeeQuery, function(err,rows,response) {
-    if(err) throw err;
-    else {
-      res.render("employeeList", {employees:rows})
-    }
-  })
+  if(pos==1) {
+    const employeeQuery = `SELECT employee.id as id,employee.name as name,tbl.name as posname,contact FROM employee INNER JOIN (select id,name from designation)tbl ON pos_id=tbl.id`;
+    db.query(employeeQuery, function(err,rows,response) {
+      if(err) throw err;
+      else {
+        res.render("employeeList", {employees:rows})
+      }
+    })
+} else {
+  pos=0;
+  empid=0;
+  res.render("login", {fail:1});
+}
 })
 
 app.listen(process.env.PORT || 3000, function() {

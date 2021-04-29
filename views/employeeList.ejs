@@ -12,7 +12,8 @@
 <div class="orderSection">
   <div class="orderBox" style="background-color:black;color:cyan;">
     <h2 class="orderListEmp" style="width:5%;text-align:left;">Id</h2>
-    <h2 class="orderListName" style="width:50%;text-align:center;">Employee Name</h2>
+    <div style="width:10%;display:inline-block;"></div>
+    <h2 class="orderListName" style="width:40%;text-align:center;">Employee Name</h2>
     <h2 class="orderListTable">Role</h2>
     <h2 class="orderListTime">Contact</h2>
   </div>
@@ -20,7 +21,15 @@
   <%employees.forEach((employee) => {%>
     <div class="orderBox">
       <h3 class="orderListEmp" style="width:5%;text-align:left;"><%=employee.id%></h3>
-      <h3 class="orderListName" style="width:50%;text-align:center;"><%=employee.name%></h3>
+      <div style="width:10%;display:inline-block;">
+      <a href="<%=`/employee/edit/${employee.id}`%>">
+        <button name="editButton" class="editButton"><i class="far fa-pencil"></i></button>
+      </a>
+      <a href="<%=`/employee/delete/${employee.id}`%>">
+        <button name="delButton" class="delButton"><i class="far fa-trash-alt"></i></button>
+      </a>
+      </div>
+      <h3 class="orderListName" style="width:40%;text-align:center;"><%=employee.name%></h3>
       <h3 class="orderListTable"><%=employee.posname%></h3>
       <h3 class="orderListTime"><%=employee.contact%></h3>
     </div>
