@@ -2,10 +2,15 @@
 
 <a href="/dashboard"><i class="fas fa-hand-point-left"></i></a>
 
+<div class="sidebox">
+  <a href="/newitem" style="color:purple;font-size:1.3rem;"><h3>->ADD ITEM</h3></a>
+  <a href="/newcategory" style="color:red;font-size:1.3rem;"><h3>->ADD CATEGORY</h3></a>
+</div>
 
 <div class="inner">
 
   <h1 class="mainHeading">Menu</h1>
+
 
   <%rows.forEach(function(row) {%>
     <%if(row.items.length === 0) {} else {%>
@@ -53,9 +58,10 @@
           </div>
 
       <%})%>
+      </div>
     <%}%>
   <%})%>
 </div>
-
+</div>
 
 <%- include('partials/footer') -%>

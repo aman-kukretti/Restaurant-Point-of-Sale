@@ -79,8 +79,8 @@ body {
 }
 
 .end {
+  position: fixed;
   color: white;
-  position: absolute;
   right: 10px;
   bottom: 10px;
 }
@@ -194,7 +194,7 @@ body {
 .sidebox {
   background-color: white;
   padding: 20px;
-  position: absolute;
+  position: fixed;
   right: 50px;
   top: 200px;
   width: 300px;
@@ -376,6 +376,7 @@ input:focus-visible {
   background-color: white;
   margin-right: 10%;
   margin-left: 10%;
+  margin-top: 100px;
   border-radius: 20px;
   padding: 1%;
 }
@@ -383,12 +384,12 @@ input:focus-visible {
 .card {
   height: 100px;
   border-radius: 20px;
-  width: 27%;
+  width: 40%;
   background-color: #a34100;
   color: cyan;
   padding: 1% 2%;
   display: inline-block;
-  text-align: left;
+  text-align: center;
   font-family: Roboto, sans-serif;
   font-weight: bolder;
   margin-right: 20px;
@@ -398,8 +399,8 @@ input:focus-visible {
 
 .fa-hand-point-left {
   color: white;
-  font-size: 7rem;
-  position: absolute;
+  font-size: 5rem;
+  position: fixed;
   left: 30px;
   top: 20px;
 }
@@ -438,7 +439,7 @@ a {
 .fa-power-off {
   color: white;
   font-size: 3rem;
-  position: absolute;
+  position: fixed;
   left: 30px;
   top: 20px;
 }
@@ -450,4 +451,14 @@ a {
 .failLogin {
   font-size: 1.2rem;
   color: red;
+}
+
+.headanchor {
+  display:inline-block;
+  color:#00FF00;
+  font-size:1.5rem;
+}
+
+.headanchor:hover {
+  color: orange;
 }

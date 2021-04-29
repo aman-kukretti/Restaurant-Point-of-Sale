@@ -46,17 +46,16 @@ app.post("/", function(req, res) {
   pos=0;
   empid=0;
   const userName = req.body.user.toLowerCase();
-  const dept = parseInt(req.body.dept);
   const pwd = req.body.pwd;
 
-  const empQuery = `SELECT id,name FROM employee WHERE pos_id=${dept} AND password="${pwd}"`;
+  const empQuery = `SELECT id,name,pos_id FROM employee WHERE password="${pwd}"`;
   db.query(empQuery, function(err, rows, response) {
     if(err) throw err;
     else {
       rows.forEach(function(row) {
         const name = row.name.replace(/ /g,"").toLowerCase() + row.id;
         if(userName===name) {
-          const query = `SELECT access from designation WHERE id=${dept}`;
+          const query = `SELECT access from designation WHERE id=${row.pos_id}`;
           db.query(query, function(err, des, response) {
             if(err) throw err;
             else {
@@ -217,7 +216,6 @@ app.post("/order/:orderId/:orderDate", function(req, res) {
   const requestedID = req.params.orderId;
   const temp = req.params.orderDate;
   const requestedDate = temp.substr(0,4) + '-' + temp.substr(4,2) + '-' + temp.substr(6);
-  console.log(requestedDate);
   const statusMarkQuery = `UPDATE restOrder SET status=1 where id=${requestedID} AND reqdate="${requestedDate}"`;
   db.query(statusMarkQuery, function(err,response) {
     if(err) throw err;
@@ -310,7 +308,6 @@ app.post("/newitem", upload.single('itemImage'), async function(req, res) {
     sqlQuery = `INSERT INTO item(name, description, price, isVeg, imageVersion, image_public_id, imageFormat) values("${req.body.name}","${req.body.description}",${req.body.price},${req.body.isVeg},"${result.version}","${result.public_id}","${result.format}")`;
   }
 
-  console.log(sqlQuery);
   db.query(sqlQuery, function(err,response) {
     if(err) throw err;
     else {
@@ -363,7 +360,6 @@ app.post("/item/edit/:itemID/:publicID", upload.single('itemImage'), async funct
   } else {
     //delete previous image, upload image with the same public id
     const deleteResult = await cloudinary.v2.uploader.destroy(public_id);
-    console.log(deleteResult);
     const result = await cloudinary.v2.uploader.upload(req.file.path);
     updateQuery += `, imageVersion="${result.version}", image_public_id="${result.public_id}", imageFormat="${result.format}"`;
   }
@@ -444,7 +440,6 @@ app.get("/newemployee", function(req, res) {
 })
 
 app.post("/newemployee", function(req, res) {
-  console.log(req.body)
   const insertQuery = `INSERT INTO employee(name,pos_id,dob,password,contact,email) values("${req.body.name}",${req.body.position},"${req.body.dob}","${req.body.pass}","${req.body.contact}","${req.body.email}")`;
 
   db.query(insertQuery, function(err,response) {
@@ -466,11 +461,21 @@ app.get("/newposition", function(req, res) {
 })
 
 app.post("/newposition", function(req, res) {
-  const sqlQuery = `INSERT INTO designation(name,salary) VALUES("${req.body.name}",${req.body.salary})`;
+  const sqlQuery = `INSERT INTO designation(name,salary,access) VALUES("${req.body.name}",${req.body.salary},${req.body.access})`;
   db.query(sqlQuery, function(err,response) {
     if(err) throw err;
   })
   res.redirect("/dashboard")
+})
+
+app.get("/employees", function(req, res) {
+  const employeeQuery = `SELECT employee.id as id,employee.name as name,tbl.name as posname,contact FROM employee INNER JOIN (select id,name from designation)tbl ON pos_id=tbl.id`;
+  db.query(employeeQuery, function(err,rows,response) {
+    if(err) throw err;
+    else {
+      res.render("employeeList", {employees:rows})
+    }
+  })
 })
 
 app.listen(process.env.PORT || 3000, function() {
