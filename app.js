@@ -449,6 +449,29 @@ app.post("/newemployee", function(req, res) {
   })
 })
 
+app.get("/employee/view/:empID", function(req, res) {
+  if(pos===1) {
+    const empID = parseInt(req.params.empID);
+    const empQuery = `SELECT * FROM employee WHERE id=${empID}`;
+    db.query(empQuery, function(err, rows, response) {
+      if(err) throw err;
+      else {
+        const posQuery = `SELECT * FROM designation WHERE id=${rows[0].pos_id}`;
+        db.query(posQuery, function(err, posrows, response) {
+          if(err) throw err;
+          else {
+            res.render("employeeView", {employee:rows[0], position:posrows[0]})
+          }
+        })
+      }
+    })
+  } else {
+    pos=0;
+    empid=0;
+    res.render("login", {fail:1});
+  }
+})
+
 app.get("/employee/edit/:empID", function(req, res) {
   if(pos===1) {
     const empID = parseInt(req.params.empID);

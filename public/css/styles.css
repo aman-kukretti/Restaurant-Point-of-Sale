@@ -416,6 +416,13 @@ input:focus-visible {
   margin-left: 10px;
 }
 
+.viewButton {
+  background-color: #B22222;
+  width: 40px;
+  height: 40px;
+  margin-left: 10px;
+}
+
 .editButton {
   background-color: blue;
   width: 40px;
@@ -429,6 +436,11 @@ input:focus-visible {
 
 .fa-pencil {
   color: yellow;
+  font-size: 1.4rem;
+}
+
+.fa-eye {
+  color: white;
   font-size: 1.4rem;
 }
 

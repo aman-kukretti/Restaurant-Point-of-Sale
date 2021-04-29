@@ -1,0 +1,35 @@
+<%- include('partials/header') -%>
+
+<a href="/employees"><i class="fas fa-hand-point-left"></i></a>
+
+<div class="inner">
+
+  <h1 class="mainHeading"><%=employee.name%></h1>
+  <hr class="categorySeperator">
+
+  <span class="cartOrderDetails">Employee id</span>
+  <span class="cartOrderDetails" style="float: right;"><%=employee.id%></span>
+  <br><hr class="itemSeperator">
+
+  <span class="cartOrderDetails">Date of Birth</span>
+  <span class="cartOrderDetails" style="float: right;"><%=employee.dob.toISOString().substr(0,10)%></span>
+  <br><hr class="itemSeperator">
+
+  <span class="cartOrderDetails">Salary</span>
+  <span class="cartOrderDetails" style="float: right;"><span class="rupee-sign">₹</span><%=position.salary%></span>
+  <br><hr class="itemSeperator">
+
+  <span class="cartOrderDetails">Contact</span>
+  <span class="cartOrderDetails" style="float: right;"><%=employee.contact%></span>
+  <br><hr class="itemSeperator">
+
+  <span class="cartOrderDetails">Email</span>
+  <span class="cartOrderDetails" style="float: right;"><%=employee.email%></span>
+  <br><hr class="itemSeperator">
+
+  <span class="cartOrderDetails">Password</span>
+  <span class="cartOrderDetails" style="float: right;"><%=employee.password%></span>
+
+</div>
+
+<%- include('partials/footer') -%>
