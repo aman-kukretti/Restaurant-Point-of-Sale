@@ -47,19 +47,18 @@ app.post("/", function(req, res) {
   empid=0;
   const userName = req.body.user.toLowerCase();
   const pwd = req.body.pwd;
-
-  const empQuery = `SELECT id,name,pos_id FROM employee WHERE password="${pwd}"`;
+  const empQuery = `SELECT id,email,pos_id FROM employee WHERE password="${pwd}"`;
   db.query(empQuery, function(err, rows, response) {
     if(err) throw err;
     else {
       rows.forEach(function(row) {
-        const name = row.name.replace(/ /g,"").toLowerCase() + row.id;
+        const name = row.email.toLowerCase();
         if(userName===name) {
           const query = `SELECT access from designation WHERE id=${row.pos_id}`;
           db.query(query, function(err, des, response) {
             if(err) throw err;
             else {
-              pos = parseInt(des[0].access);
+              pos = des[0].access;
               empid = row.id;
             }
           })
@@ -536,7 +535,7 @@ app.post("/newposition", function(req, res) {
   db.query(sqlQuery, function(err,response) {
     if(err) throw err;
   })
-  res.redirect("/dashboard")
+  res.redirect("/employees")
 })
 
 app.get("/position/edit", function(req, res) {
