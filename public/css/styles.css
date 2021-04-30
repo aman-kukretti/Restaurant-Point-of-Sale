@@ -439,7 +439,7 @@ input:focus-visible {
   font-size: 1.4rem;
 }
 
-.fa-eye {
+.fa-eye,.fa-eye-slash {
   color: white;
   font-size: 1.4rem;
 }

@@ -27,9 +27,28 @@
   <span class="cartOrderDetails" style="float: right;"><%=employee.email%></span>
   <br><hr class="itemSeperator">
 
-  <span class="cartOrderDetails">Password</span>
-  <span class="cartOrderDetails" style="float: right;"><%=employee.password%></span>
+  <span class="cartOrderDetails">Password<i class="view fas fa-eye-slash" style="color:blue;margin-left:20px;"></i></span>
+
+  <span id="passText" class="cartOrderDetails" style="float: right;"><%="*".repeat(employee.password.length)%></span>
 
 </div>
+
+<script type="text/javascript">
+  let view = false;
+  const viewBtn = document.querySelector(".view");
+  const pass = document.getElementById("passText");
+  viewBtn.addEventListener("click", ()=>{
+    view = !view;
+    if(view) {
+      viewBtn.classList.remove("fa-eye-slash");
+      viewBtn.classList.add("fa-eye");
+      pass.textContent = "<%=employee.password%>";
+    } else {
+      viewBtn.classList.remove("fa-eye");
+      viewBtn.classList.add("fa-eye-slash");
+      pass.textContent = "*".repeat(<%=employee.password.length%>);
+    }
+  })
+</script>
 
 <%- include('partials/footer') -%>
