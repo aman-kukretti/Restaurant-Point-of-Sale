@@ -315,7 +315,7 @@ app.post("/newitem", upload.single('itemImage'), async function(req, res) {
       db.query(sqlQuery2, function(err2,response2) {
         if(err2) throw err2;
         else {
-          res.redirect("/dashboard")
+          res.redirect("/menu")
         }
       });
     }
@@ -420,7 +420,7 @@ app.post("/newcategory", function(req, res) {
   db.query(sqlQuery, function(err,response) {
     if(err) throw err;
   })
-  res.redirect("/dashboard")
+  res.redirect("/menu")
 })
 
 app.get("/newemployee", function(req, res) {
@@ -444,7 +444,7 @@ app.post("/newemployee", function(req, res) {
   db.query(insertQuery, function(err,response) {
     if(err) throw err;
     else {
-      res.redirect("/dashboard");
+      res.redirect("/employees");
     }
   })
 })

@@ -15,11 +15,13 @@
   <%rows.forEach(function(row) {%>
     <%if(row.items.length === 0) {} else {%>
 
-    <hr class="categorySeperator">
-
-    <div class="itemCategory" id="<%=row.category.name%>">
+    <div class="itemCategory" id="<%=row.category.id%>">
+      <hr class="categorySeperator">
+      <a style="float:right;" href="#<%=row.category.id - 1%>"><i style="color:purple;font-size:2rem;" class="fas fa-chevron-up"></i></a>
       <h1 class="categoryTitle"><%=row.category.name%></h1>
+      <a style="float:right;" href="#<%=row.category.id + 1%>"><i style="color:purple;font-size:2rem;" class="fas fa-chevron-down"></i></a>
       <h3 class="itemCount"><%=row.items.length%> ITEMS</h3>
+
 
       <%row.items.forEach(function(item) {%>
 
