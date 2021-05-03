@@ -24,7 +24,6 @@ CREATE TABLE item(
     -> name VARCHAR(35) NOT NULL,
     -> description VARCHAR(300),
     -> price INT NOT NULL,
-    -> cat_id INT NOT NULL,
     -> isVeg BOOL NOT NULL,
     -> imageVersion CHAR(10),
     -> image_public_id CHAR(20),
@@ -52,4 +51,5 @@ CREATE TABLE employee(
 CREATE TABLE designation(
     -> id INT PRIMARY KEY AUTO_INCREMENT,
     -> name VARCHAR(35) NOT NULL,
-    -> salary INT NOT NULL);
+    -> salary INT NOT NULL,
+    -> access INT NOT NULL);

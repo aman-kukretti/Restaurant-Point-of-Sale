@@ -357,7 +357,7 @@ input:focus-visible {
   color: red;
   font-family: 'Fugaz One', cursive;
   padding: 10px;
-  position: absolute;
+  position: fixed;
   right: 50px;
   top: 480px;
   width: 340px;
