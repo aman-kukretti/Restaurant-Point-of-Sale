@@ -38,14 +38,15 @@ var pos = 0; //if 0 indicates unauthenticated otherwise stores type of access
 var empid = 0; //stores the id of the employee logged in currently
 
 //render login page
-app.get("/", function(req, res) {
+//post to login, validate then redirect ti dashboard, if fails render login page with fail=1
+
+app.route("/")
+.get(function(req, res) {
   pos=0;
   empid=0;
   res.render("login", {fail:0});
 })
-
-//post to login, validate then redirect ti dashboard, if fails render login page with fail=1
-app.post("/", function(req, res) {
+.post(function(req, res) {
   pos=0;
   empid=0;
   const userName = req.body.user.toLowerCase();
@@ -97,7 +98,11 @@ app.get("/logout", function(req, res) {
 })
 
 //get the items and categories and render ordering page
-app.get("/order", function(req, res) {
+//insert into reqOrder the customer details etc
+//insert into contains id of all items ordered
+//then redirect to /order/(this orderid)/(today)
+app.route("/order")
+.get(function(req, res) {
   if(pos===1 || pos===2) {
     var data = [];
     const sqlQuery = "SELECT * from category";
@@ -128,11 +133,7 @@ app.get("/order", function(req, res) {
     res.render("login", {fail:1});
   }
 })
-
-//insert into reqOrder the customer details etc
-//insert into contains id of all items ordered
-//then redirect to /order/(this orderid)/(today)
-app.post("/order", function(req, res) {
+.post(function(req, res) {
   var data = [];
   var keys = Object.keys(req.body);
   var values = Object.values(req.body);
@@ -183,7 +184,9 @@ app.post("/order", function(req, res) {
 })
 
 //get customers as well as all items related to this order
-app.get("/order/:orderId/:orderDate", function(req, res) {
+//mark status of the order as done i.e. true, then redirect to /orders
+app.route("/order/:orderId/:orderDate")
+.get(function(req, res) {
   if(pos===1 || pos===2 || pos===3) {
     const requestedID = parseInt(req.params.orderId);
     const temp = req.params.orderDate;
@@ -220,9 +223,7 @@ app.get("/order/:orderId/:orderDate", function(req, res) {
     res.render("login", {fail:1});
   }
 })
-
-//mark status of the order as done i.e. true, then redirect to /orders
-app.post("/order/:orderId/:orderDate", function(req, res) {
+.post(function(req, res) {
   const requestedID = req.params.orderId;
   const temp = req.params.orderDate;
   const requestedDate = temp.substr(0,4) + '-' + temp.substr(4,2) + '-' + temp.substr(6);
@@ -236,7 +237,9 @@ app.post("/order/:orderId/:orderDate", function(req, res) {
 })
 
 //get all orders of today with status=true
-app.get("/orders", function(req, res) {
+//get all orders of mentioned date with mentioned status, render orderlist
+app.route("/orders")
+.get(function(req, res) {
   if(pos===1 || pos===2 || pos===3) {
     const today = (new Date()).toISOString().substr(0,10);
     const orderQuery = `SELECT id,tableno,DATE_FORMAT(reqtime, "%r") as time,custname,status,empid from restOrder WHERE reqdate="${today}" and status=0`;
@@ -250,9 +253,7 @@ app.get("/orders", function(req, res) {
     res.render("login", {fail:1});
   }
 })
-
-//get all orders of mentioned date with mentioned status, render orderlist
-app.post("/orders", function(req, res) {
+.post(function(req, res) {
   const date = req.body.date;
   let getOrders = ``;
   if(req.body.state === "on") {
@@ -302,7 +303,9 @@ app.get("/menu", function(req, res) {
 })
 
 //render newitem page
-app.get("/newitem", function(req, res) {
+//insert values posted into item and belongsTo and upload image to cloudinary by using multer, then redirect to /menu
+app.route("/newitem")
+.get(function(req, res) {
   if(pos===1) {
     const sqlQuery = "SELECT * FROM category";
     db.query(sqlQuery, function(err, rows, response) {
@@ -317,9 +320,7 @@ app.get("/newitem", function(req, res) {
     res.render("login", {fail:1});
   }
 })
-
-//insert values posted into item and belongsTo and upload image to cloudinary by using multer, then redirect to /menu
-app.post("/newitem", upload.single('itemImage'), async function(req, res) {
+.post(upload.single('itemImage'), async function(req, res) {
   var sqlQuery = "";
   if(req.file === undefined) {
     sqlQuery = `INSERT INTO item(name, description, price, isVeg) values("${req.body.name}","${req.body.description}",${req.body.price},${req.body.isVeg})`;
@@ -344,7 +345,9 @@ app.post("/newitem", upload.single('itemImage'), async function(req, res) {
 })
 
 //render edit page by getting current instance of the item
-app.get("/item/edit/:itemID/:publicID", function(req, res) {
+//update values to item, update image if there at cloudinary, redirect to /menu
+app.route("/item/edit/:itemID/:publicID")
+.get(function(req, res) {
   if(pos===1) {
     const itemID = parseInt(req.params.itemID);
     const public_id = req.params.publicID;
@@ -367,9 +370,7 @@ app.get("/item/edit/:itemID/:publicID", function(req, res) {
     res.render("login", {fail:1});
   }
 })
-
-//update values to item, update image if there at cloudinary, redirect to /menu
-app.post("/item/edit/:itemID/:publicID", upload.single('itemImage'), async function(req, res) {
+.post(upload.single('itemImage'), async function(req, res) {
   const itemID = parseInt(req.params.itemID);
   const public_id = req.params.publicID;
   var updateQuery = `UPDATE item SET name="${req.body.name}", description="${req.body.description}", price=${req.body.price}, isVeg=${req.body.isVeg}`;
@@ -429,7 +430,9 @@ app.get("/item/delete/:itemID/:publicID", async function(req, res) {
 })
 
 //render new category form
-app.get("/newcategory", function(req, res) {
+//insert into category then redirect to /menu
+app.route("/newcategory")
+.get(function(req, res) {
   if(pos===1) {
     res.render("categoryForm")
   } else {
@@ -438,9 +441,7 @@ app.get("/newcategory", function(req, res) {
     res.render("login", {fail:1});
   }
 })
-
-//insert into category then redirect to /menu
-app.post("/newcategory", function(req, res) {
+.post(function(req, res) {
   const sqlQuery = `INSERT INTO category(name) VALUES("${req.body.name}")`;
   db.query(sqlQuery, function(err,response) {
     if(err) throw err;
@@ -449,7 +450,9 @@ app.post("/newcategory", function(req, res) {
 })
 
 //render employee form
-app.get("/newemployee", function(req, res) {
+//insert into employee, redirect to /employees
+app.route("/newemployee")
+.get(function(req, res) {
   if(pos===1) {
     const positionsQuery = "SELECT * FROM designation";
     db.query(positionsQuery, function(err, rows, response) {
@@ -464,9 +467,7 @@ app.get("/newemployee", function(req, res) {
     res.render("login", {fail:1});
   }
 })
-
-//insert into employee, redirect to /employees
-app.post("/newemployee", function(req, res) {
+.post(function(req, res) {
   const insertQuery = `INSERT INTO employee(name,pos_id,dob,password,contact,email) values("${req.body.name}",${req.body.position},"${req.body.dob}","${req.body.pass}","${req.body.contact}","${req.body.email}")`;
   db.query(insertQuery, function(err,response) {
     if(err) throw err;
@@ -501,7 +502,9 @@ app.get("/employee/view/:empID", function(req, res) {
 })
 
 //get details of employee from db, render empEdit
-app.get("/employee/edit/:empID", function(req, res) {
+//update details of employee in db, redirect to /employees
+app.route("/employee/edit/:empID")
+.get(function(req, res) {
   if(pos===1) {
     const empID = parseInt(req.params.empID);
     const empQuery = `SELECT * FROM employee WHERE id=${empID}`;
@@ -523,9 +526,7 @@ app.get("/employee/edit/:empID", function(req, res) {
     res.render("login", {fail:1});
   }
 })
-
-//update details of employee in db, redirect to /employees
-app.post("/employee/edit/:empID", function(req, res) {
+.post(function(req, res) {
   const empID = parseInt(req.params.empID);
   const emp = req.body;
   const updateQuery = `UPDATE employee SET name="${emp.name}",pos_id=${emp.position},contact="${emp.contact}",email="${emp.email}",password="${emp.pass}" WHERE id=${empID}`;
@@ -553,7 +554,9 @@ app.get("/employee/delete/:empID", function(req, res) {
 })
 
 //render position form
-app.get("/newposition", function(req, res) {
+//insert into designation, then redirect to /employees
+app.route("/newposition")
+app.get(function(req, res) {
   if(pos===1) {
     res.render("positionForm")
   } else {
@@ -562,9 +565,7 @@ app.get("/newposition", function(req, res) {
     res.render("login", {fail:1});
   }
 })
-
-//insert into designation, then redirect to /employees
-app.post("/newposition", function(req, res) {
+app.post(function(req, res) {
   const sqlQuery = `INSERT INTO designation(name,salary,access) VALUES("${req.body.name}",${req.body.salary},${req.body.access})`;
   db.query(sqlQuery, function(err,response) {
     if(err) throw err;
@@ -573,7 +574,9 @@ app.post("/newposition", function(req, res) {
 })
 
 //get positions from designation table in db, render posEdit
-app.get("/position/edit", function(req, res) {
+//update position selected in designation table in db, redirect to /employees
+app.route("/position/edit")
+app.get(function(req, res) {
   if(pos===1) {
     const empID = parseInt(req.params.empID);
     const positionQuery = "SELECT * FROM designation";
@@ -589,9 +592,7 @@ app.get("/position/edit", function(req, res) {
     res.render("login", {fail:1});
   }
 })
-
-//update position selected in designation table in db, redirect to /employees
-app.post("/position/edit", function(req, res) {
+app.post(function(req, res) {
   const editQuery = `UPDATE designation SET name="${req.body.name}",salary=${req.body.salary},access=${req.body.access} WHERE id=${req.body.position}`;
   db.query(editQuery, function(err, posrows, response) {
     if(err) throw err;
